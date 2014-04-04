@@ -1,0 +1,140 @@
+
+/* ------------------- General ------------------- */
+
+.upload-primary { background: #5cb85c !important; }
+.upload-not-primary { background: #39b3d7 !important; }
+
+.ministry-header.page-header { margin-top: 0; }
+.ministry-header.page-header a { margin-top: 8px; font-size: 13px; }
+
+.center { text-align: center; }
+.green { color: #5cb85c; }
+.red { color: #d9534f; }
+.orange { color: #ed9c28; }
+
+/* ------------------- Ministry List ------------------- */
+
+.ministry-container .page-header { clear: both; overflow: hidden; margin: 20px 0; }
+.ministry-container .page-header .add-ministry { font-size: 13px; margin-top: 10px; }
+
+.ministry-list { clear: both; }
+.ministry-list table { margin-top: 20px; border: 1px solid #ddd; }
+
+.ministry-search { float: left; width: 300px; }
+.ministry-search form .input-search { font-size: 13px; width: 230px; }
+.ministry-search form button { font-size: 13px !important; padding: 7px; }
+
+/* ------------------- Add Ministry ------------------- */
+
+.add-ministry-form input, .add-ministry-form textarea { font-size: 13px; }
+
+/*.add-ministry-form .ministry-form-settings { width: 460px; margin-right: 40px; }*/
+.add-ministry-form .ministry-form-settings textarea { height: 150px; }
+.add-ministry-form .ministry-form-settings h4 { color: #8DCD8D; }
+
+/*.add-ministry-form .admin-form-settings { width: 460px; }*/
+.add-ministry-form .admin-form-settings button { font-size: 13px; }
+.add-ministry-form .admin-form-settings h4 { color: #8DCD8D; }
+
+/* ------------------- Edit Ministry ------------------- */
+
+.edit-ministry-form input, .edit-ministry-form textarea { font-size: 13px; }
+
+.edit-ministry-form .ministry-form-settings { width: 460px; margin-right: 40px; }
+.edit-ministry-form .ministry-form-settings textarea { height: 150px; }
+.edit-ministry-form .ministry-form-settings h4 { color: #8DCD8D; }
+
+.edit-ministry-form .admin-form-settings { width: 460px; }
+.edit-ministry-form .admin-form-settings button { font-size: 13px; }
+.edit-ministry-form .admin-form-settings h4 { color: #8DCD8D; }
+
+/* ------------------- View Ministry ------------------- */
+
+
+/* ------------------- Ministry Member ------------------- */
+
+.ministry-member-container .search-member-form input[type="text"] { font-size: 13px; }
+.ministry-member-container .pagination { margin: 0; }
+.ministry-member-view-container .field-icon { float: left; text-align: center; width: 20px; }
+.ministry-member-view-container .image-thumbnail { text-align: center; }
+.ministry-member-view-container .image-thumbnail img { width: 100%; }
+
+.member-uploaded-images .upload-image {
+	background: #fff;
+	border: 1px solid #ddd;
+	float: left;
+	left: 1px !important;
+	margin-left: -1px;
+	margin-bottom: -1px;
+	padding: 5px 5px;
+	position: relative;
+	width: 222px;
+}
+.member-uploaded-images .image-thumbnail {
+	background: #FFF;
+	height: 200px;
+	max-width: 100%;
+	overflow: hidden;
+	text-align: center;
+}
+.member-uploaded-images .image-thumbnail img { display: block; height: 200px; max-height: 200px; margin: auto auto; width: 100%; }
+.member-uploaded-images .image-thumbnail img:hover {
+	cursor: pointer;
+}
+
+.member-uploaded-images .remove-member-image { color: #ddd; cursor: pointer; display: none; position: absolute; top: 80px; left: 80px; }
+.member-uploaded-images .remove-member-image:hover { text-decoration: none; }
+
+/* ------------------- Ministry Event ------------------- */
+
+.ministry-event-container .pagination { margin: 0; }
+.ministry-event-container .event-action-btn { color: #999; text-decoration: none; }
+.ministry-event-container .event-action-btn:hover { color: #ed9c28; }
+
+.event-images { margin-bottom: 20px;}
+.event-images label { display: block; }
+.event-images input[type="file"] { margin-bottom: 5px; width: 300px; display: inline-block; }
+.event-images .upload-input-container {
+	border: 1px solid #ddd; 
+	margin: 10px 0;
+	padding: 10px;
+}
+
+/*uploaded images*/
+.event-uploaded-images .upload-image {
+	background: #fff;
+	border: 1px solid #ddd;
+	float: left;
+	left: 1px !important;
+	margin-left: -1px;
+	margin-bottom: -1px;
+	padding: 5px 5px;
+	position: relative;
+	width: 222px;
+}
+.event-uploaded-images .image-thumbnail {
+	background: #FFF;
+	height: 200px;
+	max-width: 100%;
+	overflow: hidden;
+	text-align: center;
+}
+.event-uploaded-images .image-thumbnail img { display: block; height: 200px; max-height: 200px; margin: auto auto; width: 100%; }
+.event-uploaded-images .image-thumbnail img:hover {
+	cursor: pointer;
+}
+
+.event-uploaded-images .remove-event-image { color: #ddd; cursor: pointer; display: none; position: absolute; top: 80px; left: 80px; }
+.event-uploaded-images .remove-event-image:hover { text-decoration: none; }
+
+.event-uploaded-images .primary-label {
+	background: #ddd;
+	display: none;
+	position: absolute;
+	top: 178px;
+	left: 0px;
+	padding: 8px 5px;
+	width: 100%;
+	text-align: center;
+}
+.event-uploaded-images .primary-label { color: #fff; text-decoration: none; }

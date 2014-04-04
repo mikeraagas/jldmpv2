@@ -1,0 +1,70 @@
+/* ------------------ GENERAL ------------------ */
+
+body {
+	color: #333333;
+	font-family: 'Open Sans', sans-serif !important;
+	font-size: 12px !important;
+	margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+	font-family: 'Open Sans', sans-serif;
+	font-weight: bold;
+	line-height: 0;
+}
+
+.js-error-msg { color: #B70000; }
+
+.body { margin: 0 auto; width: 1170px; }
+.hide { display: none; }
+
+.pull-left { float: left; }
+.pull-right { float: right; }
+.clear { clear: both; }
+.btn { border-radius: 0; }
+.alert { padding: 10px 15px !important; }
+
+input[type="text"], input[type="email"], input[type="password"], select, button { border-radius: 0 !important; font-size: 12px !important; }
+textarea { border-radius: 0 !important; font-size: 12px !important; }
+
+/* ------------------ HEADER ------------------ */
+
+.head .navbar { border-radius: 0 !important; }
+.head .navigation-list { margin: 0 auto; width: 1170px; }
+.head .navigation-list a { font-size: 13px !important; }
+
+/* ------------------ LOGIN ------------------ */
+
+.login { margin-top: 30px; }
+.login h1 { color: #333; text-align: center; margin-bottom: 20px; }
+.login .alert { padding: 5px 35px 5px 15px; }
+.login-form { margin: 0 auto; width: 450px; }
+.login-form h4 { text-transform: uppercase; margin: 5px 0; }
+.login-form .controls { padding: 10px; }
+.login-form .input-group-addon { border-radius: 0; height: 40px; }
+.login-form input[type="text"], .login-form input[type="password"] { height: 40px; }
+
+/* ------------------ MODAL ------------------ */
+
+.modal-content { border-radius: 0; }
+.modal-content .modal-header { background: #8DCD8D; }
+.modal-content .modal-header h4 { color: #ffffff; text-shadow: -1px 1px 2px #000000; }
+
+
+/* ------------------ TABLE ------------------ */
+
+table thead > tr { border: 1px solid #4C4F53 !important; }
+table tr > th {
+	background: #4C4F53;
+	border-color: #4C4F53 !important;
+	border-bottom: 1px solid #4C4F53 !important;
+	color: #fff;
+	text-align: center;
+}
+table tr > td { border: none !important; padding: 10px !important; }
+
+/* ------------------ PANEL ------------------ */
+
+.panel { border-radius: 0; border: none; }
+.panel-default .panel-heading { background: #4C4F53; border-color: #4C4F53; border-radius: 0; color: #fff; }
+.panel-default .panel-body { border: 1px solid #ddd; border-top: 0; }

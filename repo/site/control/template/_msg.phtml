@@ -1,0 +1,14 @@
+<div class="alert alert-<?php echo !empty($msg) ? $msg['type'] : ''; ?> <?php echo empty($msg) ? 'hide' : ''; ?>">
+	<?php if (!empty($msg)): ?>
+		<?php if ($msg['type'] == 'success'): ?>
+			<i class="fa fa-check-circle"></i>
+		<?php elseif ($msg['type'] == 'info'): ?>
+			<i class="fa fa-info-circle"></i>
+		<?php elseif ($msg['type'] == 'warning'): ?>
+			<i class="fa fa-warning"></i>
+		<?php elseif ($msg['type'] == 'danger'): ?>
+			<i class="fa fa-exclamation-circle"></i>
+		<?php endif ?>&nbsp;
+		<?php echo $msg['msg']; ?>
+	<?php endif ?>
+</div>

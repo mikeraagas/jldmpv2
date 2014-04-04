@@ -1,0 +1,75 @@
+<div class="ministry-member-view-container">
+	<section class="page-header ministry-header clearfix">
+		<h2 class="pull-left">Member Detail</h2>
+		<a href="/ministry/<?php echo $ministry_id; ?>/members" class="btn btn-success pull-right"><i class="fa fa-th-list"></i>&nbsp; Back to Member List</a>
+	</section>
+	<section class="ministry-member-view-main container">
+		<?php include(dirname(__FILE__).'/../_menu.phtml'); ?>
+
+		<?php foreach ($msgs as $msg): ?>
+			<div class="alert alert-<?php echo $msg['type']; ?>"><?php echo $msg['msg']; ?></div><br>
+		<?php endforeach ?>
+			
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<i class="glyphicon glyphicon-info-sign"></i>&nbsp; Member Information
+			</div>
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-3 image-thumbnail">
+						<?php if (!empty($member['member_image'])): ?>
+							<img src="/uploads/member/<?php echo $member['member_image']['file_name']; ?>">						
+						<?php else: ?>
+							<a href="#" class="thumbnail"><img src="/assets/images/placeholder.png"></a>
+						<?php endif ?>
+					</div>
+					<div class="col-md-9"><br>
+						<p>
+							<span class="field-icon"><i class="glyphicon glyphicon-user"></i></span>
+							<?php echo $member['member_fullname']; ?>
+						</p>
+						<p>
+							<span class="field-icon"><i class="glyphicon glyphicon-envelope"></i></span>
+							<?php echo $member['member_email']; ?>
+						</p>
+						<p>
+							<span class="field-icon"><i class="fa fa-info"></i></span>
+							<?php echo $member['member_age'] ?>
+						</p>
+						<p>
+							<span class="field-icon"><i class="fa fa-<?php echo $member['member_gender']; ?>"></i></span>
+							<?php echo $member['member_gender']; ?>
+						</p>
+						<p>
+							<span class="field-icon"><i class="glyphicon glyphicon-map-marker"></i></span>
+							<?php echo $member['member_address']; ?>
+						</p>
+						<p>
+							<span class="field-icon"><i class="glyphicon glyphicon-phone"></i></span>
+							<?php echo $member['member_phone']; ?>
+						</p>
+						<p>
+							<span class="field-icon"><i class="fa fa-users"></i></span>
+							<?php echo $member['member_type']; ?>
+						</p>
+						<p>
+							<span class="field-icon"><i class="fa fa-home"></i></span>
+							<?php $count = count($ministries); $i = 0; ?>
+							<?php foreach ($ministries as $ministry): ?>
+								<?php echo $ministry['ministry_title']; ?>
+								<?php echo $i != $count -1 ? ',' : ''; ?>
+								<?php $i++; ?>
+							<?php endforeach ?>
+						</p>
+					</div>
+				</div><br>
+			</div>
+		</div>
+	</section>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+
+	});
+</script>

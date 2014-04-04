@@ -1,0 +1,144 @@
+<div class="ministry-event-container">
+	<section class="page-header ministry-header clearfix">
+		<h2 class="pull-left">Events <small>settings</small></h2>
+
+		<div class="page-header-actions pull-right">
+			<a href="/ministry" class="btn btn-success"><i class="fa fa-th-list"></i>&nbsp; Back to Ministry List</a>
+			<a href="/ministry/<?php echo $ministry_id; ?>/event/add" class="btn btn-info">
+				<i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Add Event
+			</a>
+		</div>
+	</section>
+	<section class="ministry-event-main container">
+		<?php include(dirname(__FILE__).'/_menu.phtml'); ?>
+		
+		<div class="row">
+			<div class="col-md-3">
+				<div class="list-group">
+					<a href="/ministry/<?php echo $ministry_id; ?>/events" class="list-group-item
+					<?php echo $var == null ? 'active' : ''; ?>">
+						<i class="fa fa-th-list"></i>&nbsp; All
+					</a>
+					<a href="/ministry/<?php echo $ministry_id; ?>/events/active" class="list-group-item
+					<?php echo $var == 'active' ? 'active' : ''; ?>">
+						<i class="glyphicon glyphicon-ok"></i>&nbsp; Active
+					</a>
+					<a href="/ministry/<?php echo $ministry_id; ?>/events/not-active" class="list-group-item
+					<?php echo $var == 'not-active' ? 'active' : ''; ?>">
+						<i class="glyphicon glyphicon-remove"></i>&nbsp; Not Active
+					</a>
+				</div>
+			</div>
+			<div class="col-md-9">
+				<?php foreach ($msg as $m): ?>
+					<div class="alert alert-<?php echo $m['type']; ?>"><?php echo $m['msg']; ?></div>
+				<?php endforeach ?>
+
+				<div class="row">
+					<form action="" method="get" class="search-event-form col-md-5">
+						 <div class="input-group">
+							<input type="text" name="q" class="form-control" placeholder="Search Event" 
+							value="<?php echo isset($_GET['q']) ? $_GET['q'] : ''; ?>" <?php echo isset($_GET['q']) ? 'autofocus' : ''; ?>>
+
+							<span class="input-group-btn">
+								<input type="submit" class="btn btn-warning" value="Search">
+							</span>
+						</div>
+					</form>
+					<div class="col-md-7">
+						<ul class="pagination pagination-sm pull-right">
+							<?php $range = $pg+5; $start = $range - 10; ?>
+							<?php $start = $start < 1 ? 1 : $start; ?>
+							<?php for($i = $start; $i <= $pages; $i++): ?>
+								<li<?php echo $i == $pg ? ' class="active"' : NULL; ?>>
+									<a href="?page=<?php echo $i; ?><?php echo isset($_GET['q']) && $_GET['q'] ? '&q='.$_GET['q'] : ''; ?>">
+										<?php echo $i; ?>
+									</a>
+								</li>
+								<?php if($range == $i) break; ?>
+							<?php endfor; ?>
+						</ul>
+					</div>
+				</div>
+				<br>
+				<table class="table table-striped table-bordered">
+					<thead>
+						<th>ID</th>
+						<th>Image</th>
+						<th>Title</th>
+						<th>Text</th>
+						<th>Date</th>
+					</thead>
+					<tbody>
+						<?php if (!empty($events)): ?>
+							<?php foreach ($events as $event): ?>
+								<tr>
+									<td><?php echo $event['event_id']; ?></td>
+									<td>
+										<div class="thumbnail">
+											<?php if (!empty($event['event_image'])): ?>
+												<img src="/uploads/event/<?php echo $event['event_image']['file_name']; ?>" width="80">
+											<?php else: ?>
+												<img src="/assets/images/placeholder.png" width="80">
+											<?php endif ?>
+										</div>
+									</td>
+									<td>
+										<?php 
+											switch ($event['event_active']) {
+												case 0:	$active = 'not-active'; $label = 'red'; break;
+												case 1:	$active = 'active'; $label = 'green'; break;
+											}
+										 ?>
+										<strong><?php echo $event['event_title']; ?></strong><br><br>
+
+										<span class="<?php echo $label; ?>"><strong><?php echo $active; ?></strong></span> |
+										<a href="/ministry/<?php echo $ministry_id; ?>/event/view/<?php echo $event['event_id']; ?>" class="event-action-btn">
+											<i class="fa fa-share"></i>&nbsp; View
+										</a> |
+										<a href="/ministry/<?php echo $ministry_id; ?>/event/edit/<?php echo $event['event_id']; ?>" class="event-action-btn">
+											<i class="fa fa-pencil-square"></i>&nbsp; Edit
+										</a> |
+										<a href="/ministry/<?php echo $ministry_id; ?>/events?action=remove_event&id=<?php echo $event['event_id']; ?>"
+										class="event-action-btn remove-event">
+											<i class="fa fa-times-circle"></i>&nbsp; Remove
+										</a>
+									</td>
+									<td width="350"><?php echo strlen($event['event_text']) > 100 ? substr($event['event_text'], 0, 100).'...' : $event['event_text']; ?></td>
+									<td><?php echo date('Y-m-d', $event['event_updated']); ?></td>
+								</tr>
+							<?php endforeach ?>
+						<?php else: ?>
+							<tr><td colspan="5">No events returned.</td></tr>
+						<?php endif ?>
+					</tbody>
+				</table>
+				<div class="row">
+					<div class="col-md-12">
+						<ul class="pagination pagination-sm pull-right">
+							<?php $range = $pg+5; $start = $range - 10; ?>
+							<?php $start = $start < 1 ? 1 : $start; ?>
+							<?php for($i = $start; $i <= $pages; $i++): ?>
+								<li<?php echo $i == $pg ? ' class="active"' : NULL; ?>>
+									<a href="?page=<?php echo $i; ?><?php echo isset($_GET['q']) && $_GET['q'] ? '&q='.$_GET['q'] : ''; ?>">
+										<?php echo $i; ?>
+									</a>
+								</li>
+								<?php if($range == $i) break; ?>
+							<?php endfor; ?>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</div><br>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('a.remove-event').click(function(){
+			if (confirm('Are you sure?')) return true;
+			return false;
+		});
+	});
+</script>

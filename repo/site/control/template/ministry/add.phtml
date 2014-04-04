@@ -1,0 +1,73 @@
+<div class="add-ministry-container container">
+	<section class="page-header ministry-header row">
+		<div class="col-md-12 clearfix">
+			<h2 class="pull-left">Add Ministry <small>Settings</small></h2>
+			<a href="/ministry" class="btn btn-success pull-right"><i class="fa fa-th-list"></i>&nbsp; Back to List</a>
+		</div>
+	</section>
+	<section class="add-ministry-main clearfix">
+		<div class="panel panel-default">
+			<div class="panel-heading"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Ministry Information</div>
+			<div class="panel-body">
+				<form action="" method="post" class="add-ministry-form clearfix">
+					<?php include(dirname(__FILE__).'/../_msg.phtml'); ?>
+					<div class="ministry-form-settings col-md-6 pull-left">
+						<div class="form-group">
+							<label for="ministry_title">Title</label>
+							<input type="text" name="title" id="ministry_title" class="form-control" placeholder="Ministry Title"
+							value="<?php echo isset($post['title']) ? $post['title'] : ''; ?>">
+						</div>
+						<div class="form-group">
+							<label for="ministry_description">Description</label>
+							<textarea name="description" id="ministry_description" class="form-control" placeholder="Ministry Description.."><?php echo isset($post['description']) ? $post['description'] : ''; ?></textarea>
+						</div>
+						<div class="form-group">
+							<label>Active</label>
+							<div class="input-active">
+								<label for="ministry_active_yes" class="radio-inline">
+									<input type="radio" name="active" class="ministry-active" value="1"  id="ministry_active_yes" 
+									<?php echo (isset($post['active']) && $post['active'] == 1) ? 'checked' : ''; ?>>Yes
+								</label>
+								<label for="ministry_active_no" class="radio-inline">
+									<input type="radio" name="active" class="ministry-active" value="0" id="ministry_active_no"
+									<?php echo (isset($post['active']) && $post['active'] == 0) ? 'checked' : ''; ?>>No
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="admin-form-settings col-md-6 pull-left">
+						<div class="form-group">
+							<label for="admin_name">Name</label>
+							<input type="text" name="name" id="admin_name" class="form-control" placeholder="Name"
+							value="<?php echo isset($post['name']) ? $post['name'] : ''; ?>">
+						</div>
+						<div class="form-group">
+							<label for="admin_email">Email</label>
+							<input type="text" name="email" id="admin_email" class="form-control" placeholder="Email"
+							value="<?php echo isset($post['email']) ? $post['email'] : ''; ?>">
+						</div>
+						<div class="form-group">
+							<label for="admin_username">Username</label>
+							<input type="text" name="username" id="admin_username" class="form-control" placeholder="Username"
+							value="<?php echo isset($post['username']) ? $post['username'] : ''; ?>">
+						</div>
+						<div class="form-group">
+							<label for="admin_password">Password</label>
+							<input type="password" name="password" id="admin_password" class="form-control" placeholder="Password"
+							value="<?php echo isset($post['password']) ? $post['password'] : ''; ?>">
+						</div>
+						<div class="form-group">
+							<label for="admin_confirm">Confirm Password</label>
+							<input type="password" name="confirm" id="admin_confirm" class="form-control" placeholder="Confirm"
+							value="<?php echo isset($post['confirm']) ? $post['confirm'] : ''; ?>">
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-info" name="add_ministry" value="submit"><i class="fa fa-check-square-o"></i>&nbsp; Submit</button>&nbsp;&nbsp;
+							<span class="js-error-msg"></span>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</section>
+</div>

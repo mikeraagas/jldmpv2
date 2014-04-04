@@ -1,0 +1,42 @@
+<div class="view-ministry-container">
+	<section class="page-header ministry-header clearfix">
+		<h2 class="pull-left"><?php echo $ministry['ministry_title']; ?></h2>
+		<a href="/ministry" class="btn btn-success pull-right"><i class="fa fa-th-list"></i>&nbsp; Back to Ministry List</a>
+	</section>
+	<section class="view-ministry-main container">
+		<?php include(dirname(__FILE__).'/_menu.phtml'); ?>
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<i class="glyphicon glyphicon-info-sign"></i>&nbsp; Ministry Profile
+			</div>
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-4">
+						<a href="#" class="thumbnail"><img src="/assets/images/placeholder.png" alt=""></a><br>
+						<a href="#">Change logo</a>
+					</div>
+					<div class="col-md-8">
+						<p><?php echo $ministry['ministry_description']; ?></p>
+						<p>
+							<?php if ($ministry['ministry_active'] == 1): ?>
+								<i class="glyphicon glyphicon-ok"></i>
+							<?php else: ?>
+								<i class="glyphicon glyphicon-remove"></i>
+							<?php endif ?>&nbsp;
+							<?php echo ($ministry['ministry_active'] == 1) ? 'Active' : 'Not Active'; ?>
+						</p>
+						<p>
+							<i class="glyphicon glyphicon-user"></i>&nbsp;
+							<?php echo $admin['admin_name']; ?>
+						</p>
+						<p>
+							<i class="glyphicon glyphicon-envelope"></i>&nbsp;
+							<?php echo $admin['admin_email']; ?>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>

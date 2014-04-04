@@ -1,0 +1,60 @@
+<div class="ministry-container">
+	<section class="page-header">
+		<h2 class="pull-left">Parish Ministries <small>Settings</small></h2>
+		<a href="/ministry/add" class="btn btn-success add-ministry pull-right">
+			<i class="fa fa-plus-circle"></i>&nbsp; Add Ministry
+		</a>
+	</section>
+	<section class="ministry-main">
+		<div class="ministry-search clearfix">
+			<form action="" method="get" class="ministry-search-form">
+				<div class="input-group">
+					<input type="text" name="q" class="form-control input-search" placeholder="Search Ministry">
+					<span class="input-group-btn">
+						<button type="submit" class="btn btn-info"><i class="fa fa-search"></i>&nbsp; Search</button>
+					</span>
+				</div>
+			</form>
+		</div>
+		<div class="ministry-list clearfix">
+			<table class="table table-striped">
+				<thead>
+					<th>ID</th>
+					<th>Title</th>
+					<th>Description</th>
+					<th>Active</th>
+					<th>Action</th>
+				</thead>
+				<tbody>
+					<?php if (!empty($ministries)): ?>
+						<?php foreach ($ministries as $ministry): ?>
+							<tr>
+								<td><?php echo $ministry['ministry_id']; ?></td>
+								<td><a href="#"><?php echo $ministry['ministry_title']; ?></a></td>
+								<td width="500">
+									<?php echo ($ministry['ministry_description'] < 100) ? 
+									substr($ministry['ministry_description'], 0, 100).'...' : $ministry['ministry_description']; ?>
+								</td>
+								<td><?php echo ($ministry['ministry_active'] == '1') ? 'Yes' : 'No'; ?></td>
+								<td width="250" class="ministry-actions">
+									<a href="/ministry/view/<?php echo $ministry['ministry_id']; ?>" class="btn btn-info btn-xs">
+										<i class="fa fa-share"></i>&nbsp; View
+									</a>
+									<a href="/ministry/edit/<?php echo $ministry['ministry_id'] ?>" class="btn btn-info btn-xs">
+										<i class="fa fa-pencil-square"></i>&nbsp; Edit
+									</a>
+
+									<a href="#" class="remove-ministry btn btn-info btn-xs">
+										<i class="fa fa-times-circle"></i>&nbsp; Remove
+									</a>
+								</td>
+							</tr>
+						<?php endforeach ?>
+					<?php else: ?>
+						<tr><td colspan="5">No Ministry yet.</td></tr>
+					<?php endif ?>
+				</tbody>
+			</table>
+		</div>
+	</section>
+</div>
