@@ -7,7 +7,8 @@ if($_SERVER['REQUEST_URI'] == '/assets'
 	|| strpos($_SERVER['REQUEST_URI'], '/uploads/') === 0
 	|| strpos($_SERVER['REQUEST_URI'], '/uploads?') === 0) {
 	require('uploads.php');
-} else if($_SERVER['HTTP_HOST'] === 'local.control.jldmp.ph') {
+} else if($_SERVER['HTTP_HOST'] === 'local.control.jldmp.ph'
+	|| $_SERVER['HTTP_HOST'] === 'control.jldmp.mykhel15.kd.io') {
 	include('control.php');
 } else { 
 	require('front.php'); 
