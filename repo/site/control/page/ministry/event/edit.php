@@ -76,6 +76,12 @@ class Control_Page_Ministry_Event_Edit extends Control_Page {
 
 		if (!$required) { $this->_errors[] = 'All fields are required!'; return false; }
 
+		$startDate = strtotime($post['event_start']);
+		$endDate   = strtotime($post['event_end']);
+
+		if ($startDate > $endDate) { $this->_errors[] = 'The start date must be before the end date.'; return false; }
+		if ($endDate < $startDate) { $this->_errors[] = 'The end date must be after the start date.'; return false; }
+
 		return true;
 	}
 
@@ -101,6 +107,8 @@ class Control_Page_Ministry_Event_Edit extends Control_Page {
 		$settings = array(
 			'event_title' 	=> $post['event_title'],
 			'event_text'  	=> $post['event_text'],
+			'event_start'	=> strtotime($post['event_start']),
+			'event_end'		=> strtotime($post['event_end']),
 			'event_active'	=> $post['event_active'],
 			'event_updated'	=> time());
 

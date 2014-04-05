@@ -61,7 +61,18 @@ table tr > th {
 	color: #fff;
 	text-align: center;
 }
-table tr > td { border: none !important; padding: 10px !important; }
+table tr > td { border: none !important; border-bottom: 1px solid #ddd !important; padding: 10px !important; }
+
+/* ------------------ DATEPICKER ------------------ */
+
+.datepicker-days { font-size: 12px; }
+.datepicker-days table thead > tr { border: none !important; }
+.datepicker-days table tr > th {
+	background: #fff;
+	border-bottom: none !important;
+	color: #000;
+}
+.datepicker-days  table tr > td { border: none !important; }
 
 /* ------------------ PANEL ------------------ */
 

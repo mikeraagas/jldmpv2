@@ -91,6 +91,9 @@
 .ministry-event-container .event-action-btn { color: #999; text-decoration: none; }
 .ministry-event-container .event-action-btn:hover { color: #ed9c28; }
 
+.event-date .input-group-addon { border-radius: 0; }
+.event-date .alert { margin-bottom: 0; margin-top: 16px; }
+
 .event-images { margin-bottom: 20px;}
 .event-images label { display: block; }
 .event-images input[type="file"] { margin-bottom: 5px; width: 300px; display: inline-block; }

@@ -21,6 +21,7 @@ class Control_Page_Ministry_Events extends Control_Page {
 
 	protected $_ministry 	= null;
 	protected $_var 	 	= null;
+	protected $_eventPath   = null;
 	protected $_msg			= array();
 	
 	/* Private Properties
@@ -126,6 +127,28 @@ class Control_Page_Ministry_Events extends Control_Page {
 	}
 
 	protected function _removeEvent($id) {
+		$this->_eventPath = dirname(__FILE__).'/../../../../../uploads/event/';
+
+		// remove images
+		$images = $this->_db->search()
+			->setTable('file')
+			->setColumns('*')
+			->addFilter('file_parent = '.$id.' AND file_active = 1 AND file_type = "event"')
+			->getRows();
+
+		if (!empty($images)) {
+			foreach ($images as $image) {
+				unlink($this->_eventPath.$image['file_name']);
+			}
+
+			$imagesFilter[] = array('file_parent=%s', $id);
+			$imagesFilter[] = array('file_active=%s', 1);
+			$imagesFilter[] = array('file_type=%s', 'event');
+
+			$this->_db->deleteRows('file', $imagesFilter);
+		}
+
+		// delete event
 		$filter[] = array('event_id=%s', $id);
 		$this->_db->deleteRows('event', $filter);
 

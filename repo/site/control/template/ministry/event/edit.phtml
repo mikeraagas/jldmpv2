@@ -77,6 +77,41 @@
 						<label for="event_text">Event Text</label>
 						<textarea name="event_text" id="event_text" class="form-control" cols="30" rows="10" placeholder="Description"><?php echo isset($post['event_text']) ? $post['event_text'] : ''; ?></textarea>
 					</div>
+
+					<div class="form-group event-date">
+						<div class="row">
+							<div class="col-md-3">
+								<label>Start Date</label>
+								<span class="input-group">
+									<input class="form-control" name="event_start" id="start-date-display" type="text" 
+									value="<?php echo isset($post['event_start']) ? $post['event_start'] : date('Y-m-d', time()); ?>" readonly>
+
+									<span class="input-group-btn">
+										<a href="#" id="date-start" class="btn btn-default" data-date-format="yyyy-mm-dd">
+											<i class="glyphicon glyphicon-th"></i>
+										</a>
+									</span>
+								</span>
+							</div>
+							<div class="col-md-3">
+								<label>End Date</label>
+								<div class="input-group">
+									<input class="form-control" name="event_end" id="end-date-display" type="text" 
+									value="<?php echo isset($post['event_end']) ? $post['event_end'] : date('Y-m-d', time()); ?>" readonly>
+
+									<span class="input-group-btn">
+										<a href="#" id="date-end" class="btn btn-default" data-date-format="yyyy-mm-dd">
+											<i class="glyphicon glyphicon-th"></i>
+										</a>
+									</span>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="alert alert-danger hide"></div>
+							</div>
+						</div>
+					</div>
+
 					<div class="form-group">
 						<label for="event_active">Event Active</label>
 						<div class="radio">

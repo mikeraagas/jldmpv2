@@ -66,8 +66,9 @@
 						<th>ID</th>
 						<th>Image</th>
 						<th>Title</th>
-						<th>Text</th>
-						<th>Date</th>
+						<th>Start Date</th>
+						<th>End Date</th>
+						<th>Event Updated</th>
 					</thead>
 					<tbody>
 						<?php if (!empty($events)): ?>
@@ -91,20 +92,23 @@
 											}
 										 ?>
 										<strong><?php echo $event['event_title']; ?></strong><br><br>
-
-										<span class="<?php echo $label; ?>"><strong><?php echo $active; ?></strong></span> |
-										<a href="/ministry/<?php echo $ministry_id; ?>/event/view/<?php echo $event['event_id']; ?>" class="event-action-btn">
-											<i class="fa fa-share"></i>&nbsp; View
-										</a> |
-										<a href="/ministry/<?php echo $ministry_id; ?>/event/edit/<?php echo $event['event_id']; ?>" class="event-action-btn">
-											<i class="fa fa-pencil-square"></i>&nbsp; Edit
-										</a> |
-										<a href="/ministry/<?php echo $ministry_id; ?>/events?action=remove_event&id=<?php echo $event['event_id']; ?>"
-										class="event-action-btn remove-event">
-											<i class="fa fa-times-circle"></i>&nbsp; Remove
-										</a>
+										
+										<div class="pull-right">
+											<span class="<?php echo $label; ?>"><strong><?php echo $active; ?></strong></span> |
+											<a href="/ministry/<?php echo $ministry_id; ?>/event/view/<?php echo $event['event_id']; ?>" class="event-action-btn">
+												<i class="fa fa-share"></i>&nbsp; View
+											</a> |
+											<a href="/ministry/<?php echo $ministry_id; ?>/event/edit/<?php echo $event['event_id']; ?>" class="event-action-btn">
+												<i class="fa fa-pencil-square"></i>&nbsp; Edit
+											</a> |
+											<a href="/ministry/<?php echo $ministry_id; ?>/events?action=remove_event&id=<?php echo $event['event_id']; ?>"
+											class="event-action-btn remove-event">
+												<i class="fa fa-times-circle"></i>&nbsp; Remove
+											</a>
+										</div>
 									</td>
-									<td width="350"><?php echo strlen($event['event_text']) > 100 ? substr($event['event_text'], 0, 100).'...' : $event['event_text']; ?></td>
+									<td><?php echo date('F j, Y', $event['event_start']); ?></td>
+									<td><?php echo date('F j, Y', $event['event_end']); ?></td>
 									<td><?php echo date('Y-m-d', $event['event_updated']); ?></td>
 								</tr>
 							<?php endforeach ?>
