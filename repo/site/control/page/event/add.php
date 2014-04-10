@@ -6,7 +6,7 @@
 /**
  * Default logic to output a page
  */
-class Control_Page_Ministry_Event_Add extends Control_Page {
+class Control_Page_Event_Add extends Control_Page {
 	/* Constants
 	-------------------------------*/
 	/* Public Properties
@@ -14,10 +14,9 @@ class Control_Page_Ministry_Event_Add extends Control_Page {
 	/* Protected Properties
 	-------------------------------*/
 	protected $_title    = 'JLDMP - Control';
-	protected $_class    = 'ministry';
-	protected $_template = '/ministry/event/add.phtml';
+	protected $_class    = 'event';
+	protected $_template = '/event/add.phtml';
 
-	protected $_ministry 	 = null;
 	protected $_eventPath	 = null;
 	protected $_errors   	 = array();
 	protected $_post 	 	 = array();
@@ -30,8 +29,7 @@ class Control_Page_Ministry_Event_Add extends Control_Page {
 	/* Public Methods
 	-------------------------------*/
 	public function render() {
-		$this->_ministry  = isset($this->_request['variables'][0]) ? $this->_request['variables'][0] : null;
-		$this->_eventPath = dirname(__FILE__).'/../../../../../../uploads/event/';
+		$this->_eventPath = dirname(__FILE__).'/../../../../../uploads/event/';
 
 		if (isset($_POST['add_event'])) {
 			if ($this->_validate($_POST)) {
@@ -52,9 +50,8 @@ class Control_Page_Ministry_Event_Add extends Control_Page {
 
 		$this->_body = array(
 			'class' 		=> 'event',
-			'msgs'			=> $this->_msg,
+			'msg'			=> $this->_msg,
 			'errors' 		=> $this->_errors,
-			'ministry_id' 	=> $this->_ministry,
 			'post' 			=> $this->_post);
 
 		return $this->_page();
@@ -82,11 +79,10 @@ class Control_Page_Ministry_Event_Add extends Control_Page {
 		$slug = str_replace(' ', '-', $post['event_title']);
 
 		$settings = array(
-			'event_ministry' 	=> $this->_ministry,
 			'event_title' 		=> $post['event_title'],
 			'event_text'		=> $post['event_text'],
 			'event_slug'		=> $slug,
-			'event_type'		=> 'ministry',
+			'event_type'		=> 'general',
 			'event_start'		=> strtotime($post['event_start']),
 			'event_end'			=> strtotime($post['event_end']),
 			'event_active'		=> $post['event_active'],
@@ -123,7 +119,7 @@ class Control_Page_Ministry_Event_Add extends Control_Page {
 			'type' => 'success',
 			'msg'  => 'Event successfully created.');
 
-		header('Location: /ministry/'.$this->_ministry.'/events');
+		header('Location: /events');
 		exit;
 	}
 
@@ -174,7 +170,7 @@ class Control_Page_Ministry_Event_Add extends Control_Page {
 
 			unset($_SESSION['event_tmpimages']);
 
-			header('Location: /ministry/'.$this->_ministry.'/event/add');
+			header('Location: /event/add');
 			exit;
 		}
 
@@ -184,7 +180,7 @@ class Control_Page_Ministry_Event_Add extends Control_Page {
 			'type' 	=> 'success',
 			'msg'	=> 'Successfully uploaded event images.');
 
-		header('Location: /ministry/'.$this->_ministry.'/event/add');
+		header('Location: /event/add');
 		exit;
 	}
 
@@ -203,7 +199,7 @@ class Control_Page_Ministry_Event_Add extends Control_Page {
 					'type' 	=> 'success',
 					'msg'	=> 'Successfully removed uploaded image.');
 
-				header('Location: /ministry/'.$this->_ministry.'/event/add');
+				header('Location: /event/add');
 				exit;
 			}
 		}
@@ -214,7 +210,7 @@ class Control_Page_Ministry_Event_Add extends Control_Page {
 			'type' 	=> 'danger',
 			'msg'	=> 'Image does not exists in uploaded files!');
 
-		header('Location: /ministry/'.$this->_ministry.'/event/add');
+		header('Location: /event/add');
 		exit;
 	}
 
@@ -240,7 +236,7 @@ class Control_Page_Ministry_Event_Add extends Control_Page {
 				'type' => 'success',
 				'msg'  => 'Successfully set image as primary.');
 			
-			header('Location: /ministry/'.$this->_ministry.'/event/add');
+			header('Location: /event/add');
 			exit;
 		}
 	}

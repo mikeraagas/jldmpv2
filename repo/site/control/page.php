@@ -27,6 +27,7 @@ abstract class Control_Page extends Eden_Class {
 	protected $_template 	= null;
 	protected $_db 			= null;
 	protected $_request     = null;
+	protected $_msg 		= array();
 
 	// upload configs
 	protected $_errors 		 = array();

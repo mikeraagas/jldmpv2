@@ -1,12 +1,12 @@
-<div class="ministry-event-view-container">
-	<section class="page-header ministry-header clearfix">
-		<h2 class="pull-left">Event Detail</h2>
-		<a href="/ministry/<?php echo $ministry_id; ?>/events" class="btn btn-success pull-right"><i class="fa fa-th-list"></i>&nbsp; Back to Events List</a>
+<div class="event-view-container">
+	<section class="page-header event-header clearfix">
+		<h2 class="pull-left">Event Detail <small>view</small></h2>
+		<a href="/events" class="btn btn-success pull-right"><i class="fa fa-th-list"></i>&nbsp; Back to Events List</a>
 	</section>
-	<section class="ministry-event-view-main">
-		<?php include(dirname(__FILE__).'/../_menu.phtml'); ?>
-
-		<?php include(dirname(__FILE__).'/../../_msg.phtml'); ?>
+	<section class="event-view-main">
+		<?php foreach ($msgs as $msg): ?>
+			<div class="alert alert-<?php echo $msg['type']; ?>"><?php echo $msg['msg']; ?></div><br>
+		<?php endforeach ?>
 			
 		<div class="panel panel-default">
 			<div class="panel-heading">

@@ -35,7 +35,7 @@ class Control_Page_Login extends Control_Page {
 		}
 
 		$this->_body = array(
-			'msg' => $this->_msg);
+			'msgs' => $this->_msg);
 
 		return $this->_page();
 	}

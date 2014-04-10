@@ -154,6 +154,34 @@ class Control_Page_Ministry_Member_Add extends Control_Page {
 
 				rename($this->_memberPath.$this->_fileNames[$key], $this->_memberPath.$filename);
 
+				// check if image already exists
+				$exists = $this->_db->search()
+					->setTable('file')
+					->setColumns('*')
+					->addFilter('file_name = "'.$_SESSION['member_tmpimages'][0]['file_name'].'" AND file_active = 0 AND file_type = "member"')
+					->getRow();
+
+				// if image exists update file and database
+				if (!empty($exists)) {
+					unlink($this->_memberPath.$_SESSION['member_tmpimages'][0]['file_name']);
+
+					// update datebase file name
+					$settings = array('file_name' => $filename);
+					$filter[] = array('file_id=%s', $exists['file_id']);
+
+					$this->_db->updateRows('file', $settings, $filter);
+
+					$_SESSION['member_tmpimages'][0]['file_name'] = $filename;
+					unset($fileTmpPath);
+
+					$_SESSION['msg'][] = array(
+						'type' 	=> 'success',
+						'msg'	=> 'Successfully updated member image.');
+
+					header('Location: /ministry/'.$this->_ministry.'/member/add');
+					exit;
+				}
+
 				$settings = array(
 					'file_name' 	 => $filename,
 					'file_extension' => $this->_fileTypes[$key],

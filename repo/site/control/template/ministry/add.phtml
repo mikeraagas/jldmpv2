@@ -6,12 +6,63 @@
 		</div>
 	</section>
 	<section class="add-ministry-main clearfix">
+
+		<?php foreach ($errors as $error): ?>
+			<div class="alert alert-danger"><?php echo $error; ?></div><br>
+		<?php endforeach ?>
+		
+		<?php include(dirname(__FILE__).'/../_msg.phtml'); ?>
+
+		<div class="panel panel-default">
+			<div class="panel-heading"><i class="glyphicon glyphicon-info-sign"></i>&nbsp; Update ministry</div>
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-md-3">
+						<div class="ministry-uploaded-images clearfix">
+							<div class="upload-image">
+								<div class="image-thumbnail">
+									<?php if (isset($_SESSION['ministry_tmpimages']) && !empty($_SESSION['ministry_tmpimages'])): ?>
+										<?php foreach ($_SESSION['ministry_tmpimages'] as $key => $image): ?>
+											<img src="/uploads/ministry/<?php echo $image['file_name']; ?>">
+										<?php endforeach ?>
+									<?php else: ?>
+										<img src="/assets/images/placeholder.png">
+									<?php endif ?>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-9">
+						<form action="" method="post" enctype="multipart/form-data" id="ministry_images_form" class="ministry-images-form">
+							<div class="upload-input-container">
+								<div class="form-input">
+								    <input name="file[]" type="file" />
+								</div>
+							</div>
+						    
+						    <input type="submit" class="btn btn-info btn-sm" 
+						    value="<?php echo isset($_SESSION['ministry_tmpimages']) && !empty($_SESSION['ministry_tmpimages']) ? 'Update' : 'Add'; ?> Image" id="upload"/>
+
+						    <?php if (isset($_SESSION['ministry_tmpimages']) && !empty($_SESSION['ministry_tmpimages'])): ?>
+						    	<?php foreach ($_SESSION['ministry_tmpimages'] as $key => $image): ?>
+								    <a href="/ministry/add?action=remove_upload&id=<?php echo $image['file_id']; ?>"
+								    class="remove-image-btn btn btn-danger btn-sm">
+										<i class="fa fa-times-circle"></i>&nbsp; Remove Image
+								    </a>
+								<?php endforeach ?>
+						    <?php endif ?>
+					    </form>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div class="panel panel-default">
 			<div class="panel-heading"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Ministry Information</div>
 			<div class="panel-body">
 				<form action="" method="post" class="add-ministry-form clearfix">
-					<?php include(dirname(__FILE__).'/../_msg.phtml'); ?>
 					<div class="ministry-form-settings col-md-6 pull-left">
+						<h4>Ministry Settings</h4><br>
 						<div class="form-group">
 							<label for="ministry_title">Title</label>
 							<input type="text" name="title" id="ministry_title" class="form-control" placeholder="Ministry Title"
@@ -36,6 +87,7 @@
 						</div>
 					</div>
 					<div class="admin-form-settings col-md-6 pull-left">
+						<h4>Admin Settings</h4><br>
 						<div class="form-group">
 							<label for="admin_name">Name</label>
 							<input type="text" name="name" id="admin_name" class="form-control" placeholder="Name"

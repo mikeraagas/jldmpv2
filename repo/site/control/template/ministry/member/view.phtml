@@ -6,9 +6,7 @@
 	<section class="ministry-member-view-main container">
 		<?php include(dirname(__FILE__).'/../_menu.phtml'); ?>
 
-		<?php foreach ($msgs as $msg): ?>
-			<div class="alert alert-<?php echo $msg['type']; ?>"><?php echo $msg['msg']; ?></div><br>
-		<?php endforeach ?>
+		<?php include(dirname(__FILE__).'/../../_msg.phtml'); ?>
 			
 		<div class="panel panel-default">
 			<div class="panel-heading">

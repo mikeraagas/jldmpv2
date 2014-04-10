@@ -1,0 +1,13 @@
+
+/* ------------------- General ------------------- */
+
+/* ------------------- Events List ------------------- */
+
+.event-header.page-header { clear: both; overflow: hidden; margin: 0 0 20px !important; }
+.event-header.page-header a { font-size: 13px; margin-top: 10px; }
+
+.events-container .event-search ul { margin: 0; }
+.events-container .event-list table { margin-top: 20px; }
+
+.event-date .input-group-addon { border-radius: 0; }
+.event-date .alert { margin-bottom: 0; margin-top: 16px; }

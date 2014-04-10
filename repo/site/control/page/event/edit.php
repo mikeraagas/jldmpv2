@@ -6,7 +6,7 @@
 /**
  * Default logic to output a page
  */
-class Control_Page_Ministry_Event_Edit extends Control_Page {
+class Control_Page_Event_Edit extends Control_Page {
 	/* Constants
 	-------------------------------*/
 	/* Public Properties
@@ -14,10 +14,9 @@ class Control_Page_Ministry_Event_Edit extends Control_Page {
 	/* Protected Properties
 	-------------------------------*/
 	protected $_title    = 'JLDMP - Control';
-	protected $_class    = 'ministry';
-	protected $_template = '/ministry/event/edit.phtml';
+	protected $_class    = 'event';
+	protected $_template = '/event/edit.phtml';
 
-	protected $_ministry  = null;
 	protected $_id 		  = null;
 	protected $_eventPath = null;
 	protected $_post 	  = array();
@@ -30,11 +29,10 @@ class Control_Page_Ministry_Event_Edit extends Control_Page {
 	/* Public Methods
 	-------------------------------*/
 	public function render() {
-		$this->_ministry  = isset($this->_request['variables'][0]) ? $this->_request['variables'][0] : null;
-		$this->_id 		  = isset($this->_request['variables'][1]) ? $this->_request['variables'][1] : null;
-		$this->_eventPath = dirname(__FILE__).'/../../../../../../uploads/event/';
+		$this->_id 		  = isset($this->_request['variables'][0]) ? $this->_request['variables'][0] : null;
+		$this->_eventPath = dirname(__FILE__).'/../../../../../uploads/event/';
 
-		if ($this->_id == null) { header('Location: /ministry/'.$this->_ministry.'/members'); exit; }
+		if ($this->_id == null) { header('Location: /events'); exit; }
 
 		if (isset($_GET['action']) && $_GET['action'] == 'remove_image') { $this->_removeEventImage($_GET['id']); }
 		if (isset($_GET['action']) && $_GET['action'] == 'set_primary') { $this->_setPrimaryImage($_GET['id']); }
@@ -53,14 +51,16 @@ class Control_Page_Ministry_Event_Edit extends Control_Page {
 			$this->_post = $_POST;
 		}
 
+		// control()->output($this->_post);
+		// exit;
+
 		$this->_renderMsg();
 		
 		$this->_body = array(
-			'class'			=> 'event',
-			'ministry_id' 	=> $this->_ministry,
-			'msgs' 			=> $this->_msg,
-			'errors' 		=> $this->_errors,
-			'post' 			=> $this->_post);
+			'class'		=> 'event',
+			'msg'		=> $this->_msg,
+			'errors' 	=> $this->_errors,
+			'post' 		=> $this->_post);
 
 		return $this->_page();
 	}
@@ -89,7 +89,7 @@ class Control_Page_Ministry_Event_Edit extends Control_Page {
 		$event = $this->_db->search()
 			->setTable('event')
 			->setColumns('*')
-			->addFilter('event_id = "'.$this->_id.'" AND event_ministry = "'.$this->_ministry.'"')
+			->addFilter('event_id = "'.$this->_id.'"')
 			->getRow();
 
 		$images = $this->_db->search()
@@ -119,7 +119,7 @@ class Control_Page_Ministry_Event_Edit extends Control_Page {
 			'type' => 'success',
 			'msg'  => 'Event Successfully updated.');
 
-		header('Location: /ministry/'.$this->_ministry.'/events');
+		header('Location: /events');
 		exit;
 	}
 
@@ -223,7 +223,7 @@ class Control_Page_Ministry_Event_Edit extends Control_Page {
 	}
 
 	protected function _redirect() {
-		header('Location: /ministry/'.$this->_ministry.'/event/edit/'.$this->_id);
+		header('Location: /event/edit/'.$this->_id);
 		exit;
 	}
 

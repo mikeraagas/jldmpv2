@@ -113,7 +113,7 @@
 								</tr>
 							<?php endforeach ?>
 						<?php else: ?>
-							<tr><td colspan="5">No events returned.</td></tr>
+							<tr><td colspan="6">No events returned.</td></tr>
 						<?php endif ?>
 					</tbody>
 				</table>
@@ -137,12 +137,3 @@
 		</div>
 	</section>
 </div><br>
-
-<script type="text/javascript">
-	$(document).ready(function(){
-		$('a.remove-event').click(function(){
-			if (confirm('Are you sure?')) return true;
-			return false;
-		});
-	});
-</script>

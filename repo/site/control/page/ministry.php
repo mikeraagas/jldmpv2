@@ -27,26 +27,17 @@ class Control_Page_Ministry extends Control_Page {
 	/* Public Methods
 	-------------------------------*/
 	public function render() {
-		if (isset($_POST['add_ministry'])) {
-			$this->_addMinistry($_POST);
-		}
-
 		$ministries = $this->_getMinistries();
+		$ministries = $this->_getMinistryImage($ministries);
 
-		if(isset($_SESSION['msg']) && !empty($_SESSION['msg'])) {
-			$this->_msg = $_SESSION['msg'];
-			unset($_SESSION['msg']);		
-		}
+		// control()->output($ministries);
+		// exit;
 
-		if (isset($_SESSION['addHistory'])) {
-			$addHistory = $_SESSION['addHistory'];
-			unset($_SESSION['addHistory']);
-		}
+		$this->_renderMsg();
 
 		$this->_body = array(
 			'ministries' => $ministries,
-			'msg' 		 => $this->_msg,
-			'addHistory' => isset($addHistory) ? $addHistory : array());
+			'msgs' 		 => $this->_msg);
 
 		return $this->_page();
 	}
@@ -55,49 +46,28 @@ class Control_Page_Ministry extends Control_Page {
 	-------------------------------*/
 	protected function _getMinistries() {
 		$ministries = $this->_db->search()
-			->setTable('ministry')
-			->setColumns('*')
+			->setTable('ministry m')
+			->setColumns('m.*', 'a.*')
+			->addInnerJoinOn('admin a', 'a.admin_id = m.ministry_admin')
+			->addSort('m.ministry_updated', 'DESC')
 			->setRange(self::RANGE)
 			->getRows();
 
 		return $ministries;
 	}
 
-	protected function _addMinistry($post) {
-		// check if exists
-		$exists = $this->_db->search()
-			->setTable('ministry')
-			->setColumns('*')
-			->filterByMinistryTitle($post['title'])
-			->getRow();
+	protected function _getMinistryImage($ministries) {
+		foreach ($ministries as $key => $ministry) {
+			$image = $this->_db->search()
+				->setTable('file')
+				->setColumns('*')
+				->addFilter('file_parent = '.$ministry['ministry_id'].' AND file_active = 1 AND file_type = "ministry"')
+				->getRow();
 
-		if (!empty($exists)) {
-			$_SESSION['msg'] = array(
-				'type'   => 'danger',
-				'msg'  	 => 'Ministry already exists',
-				'action' => 'add');
-
-			$_SESSION['addHistory'] = $post;
-
-			header('Location: /ministry');
-			exit;
+			$ministries[$key]['ministry_image'] = $image;
 		}
 
-		$settings = array(
-			'ministry_title' 		=> $post['title'],
-			'ministry_description' 	=> $post['description'],
-			'ministry_active' 		=> $post['active'],
-			'ministry_created' 		=> time(),
-			'ministry_updated' 		=> time());
-
-		$this->_db->insertRow('ministry', $settings);
-
-		$_SESSION['msg'] = array(
-			'type' => 'success',
-			'msg'  => 'Ministry successfully added.');
-
-		header('Location: /ministry');
-		exit;
+		return $ministries;
 	}
 
 	/* Private Methods

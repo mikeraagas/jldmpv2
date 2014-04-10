@@ -8,7 +8,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Comfortaa', cursive;
 	font-weight: bold;
 	line-height: 0;
 }
@@ -59,7 +59,6 @@ table tr > th {
 	border-color: #4C4F53 !important;
 	border-bottom: 1px solid #4C4F53 !important;
 	color: #fff;
-	text-align: center;
 }
 table tr > td { border: none !important; border-bottom: 1px solid #ddd !important; padding: 10px !important; }
 
@@ -79,3 +78,56 @@ table tr > td { border: none !important; border-bottom: 1px solid #ddd !importan
 .panel { border-radius: 0; border: none; }
 .panel-default .panel-heading { background: #4C4F53; border-color: #4C4F53; border-radius: 0; color: #fff; }
 .panel-default .panel-body { border: 1px solid #ddd; border-top: 0; }
+
+
+/* ------------------ EVENT UPLOAD ------------------ */
+
+.upload-primary { background: #5cb85c !important; }
+.upload-not-primary { background: #39b3d7 !important; }
+
+.event-images-form { margin-bottom: 20px;}
+.event-images-form label { display: block; }
+.event-images-form input[type="file"] { margin-bottom: 5px; width: 300px; display: inline-block; }
+.event-images-form .upload-input-container {
+	border: 1px solid #ddd; 
+	margin: 10px 0;
+	padding: 10px;
+}
+
+.event-uploaded-images .upload-image {
+	background: #fff;
+	border: 1px solid #ddd;
+	float: left;
+	left: 1px !important;
+	margin-left: -1px;
+	margin-bottom: -1px;
+	padding: 5px 5px;
+	position: relative;
+	width: 222px;
+}
+.event-uploaded-images .image-thumbnail {
+	background: #FFF;
+	height: 200px;
+	max-width: 100%;
+	overflow: hidden;
+	text-align: center;
+}
+.event-uploaded-images .image-thumbnail img { display: block; height: 200px; max-height: 200px; margin: auto auto; width: 100%; }
+.event-uploaded-images .image-thumbnail img:hover {
+	cursor: pointer;
+}
+
+.event-uploaded-images .remove-event-image { color: #ddd; cursor: pointer; display: none; position: absolute; top: 80px; left: 80px; }
+.event-uploaded-images .remove-event-image:hover { text-decoration: none; }
+
+.event-uploaded-images .primary-label {
+	background: #ddd;
+	display: none;
+	position: absolute;
+	top: 178px;
+	left: 0px;
+	padding: 8px 5px;
+	width: 100%;
+	text-align: center;
+}
+.event-uploaded-images .primary-label { color: #fff; text-decoration: none; }
