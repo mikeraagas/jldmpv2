@@ -62,12 +62,14 @@ abstract class Front_Page extends Eden_Class {
 		$this->_head['page'] = $this->_class;
 		
 		$page = front()->path('page');
-		$head = front()->trigger('head')->template($page.'/_head.phtml', $this->_head);
-		$body = front()->trigger('body')->template($page.$this->_template, $this->_body);
-		$foot = front()->trigger('foot')->template($page.'/_foot.phtml', $this->_foot);
+		$tpl  = front()->path('template');
+
+		$head = front()->trigger('head')->template($tpl.'/_head.phtml', $this->_head);
+		$body = front()->trigger('body')->template($tpl.$this->_template, $this->_body);
+		$foot = front()->trigger('foot')->template($tpl.'/_foot.phtml', $this->_foot);
 		
 		//page
-		return front()->template($page.'/_page.phtml', array(
+		return front()->template($tpl.'/_page.phtml', array(
 			'meta' 			=> $this->_meta,
 			'title'			=> $this->_title,
 			'class'			=> $this->_class,

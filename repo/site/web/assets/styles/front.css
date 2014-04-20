@@ -1,0 +1,54 @@
+/* ------------------ GENERAL ------------------ */
+
+body {
+	color: #333333;
+	font-family: 'Open Sans', sans-serif !important;
+	font-size: 13px !important;
+	margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+	font-family: 'Comfortaa', cursive;
+	font-weight: bold;
+}
+
+.body, .foot { margin: 0 auto; width: 1170px; }
+
+input[type="text"], input[type="email"], input[type="password"], select, button { border-radius: 0 !important; font-size: 12px !important; }
+
+/* ------------------ HEADER ------------------ */
+
+.head { border-bottom: 1px solid #ddd; }
+.head .main-header { border-bottom: none; margin: 0 auto; padding-top: 20px; width: 1170px; }
+.head .main-header .header-logo h1 { margin: 10px 0 5px; }
+.head .main-header .main-navigation { margin-top: 20px; }
+.head .main-header .main-navigation ul { float: right; margin: 0; padding: 0; }
+.head .main-header .main-navigation ul.nav-pills > li { margin-left: 10px; }
+.head .main-header .main-navigation ul li.active { background: #68bb39; color: #fff; }
+.head .main-header .main-navigation ul li.active a { background: #68bb39; color: #fff; }
+.head .main-header .main-navigation ul li a { color: #333; }
+.head .main-header .main-navigation ul li a:hover { border-radius: 0; background: #68bb39; color: #fff; }
+.head .main-header .main-navigation ul li a .caret { border-top-color: #333; border-bottom-color: #333; margin-top: -2px; }
+.head .main-header .main-navigation ul li a .caret:hover { border-top-color: #fff; border-bottom-color: #fff; }
+.head .main-header .dropdown-menu { border-radius: 0; font-size: 13px !important; }
+.head .main-header .nav .open > a, .nav .open > a:hover, .nav .open > a:focus { background-color: #fff; border-radius: 0; }
+
+/* ------------------ CAROUSEL ------------------ */
+
+.carousel img { min-width: 100%; }
+
+/* ------------------ HOME ------------------ */
+
+.index-content .index-sidebar-snippets form { margin-top: 30px; }
+.index-content .index-sidebar-snippets form .input-group-addon {
+	background-color: #68bb39;
+	border: 1px solid #68bb39;
+	border-left: none;
+	border-radius: 0;
+	color: #fff;
+}
+
+.index-content .index-main-content .page-header h2 small { color: #428f21; }
+.index-event-list .index-event-item .event-post:before { content: "•"; display: inline-block; padding-right: 10px; }
+.index-event-list .index-event-item .event-read-more { background: #68bb39; color: #fff; padding: 5px 8px; text-decoration: none; }
+.index-event-list .index-event-item .event-read-more:hover { background: #428f21; }

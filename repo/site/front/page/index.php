@@ -13,7 +13,7 @@ class Front_Page_Index extends Front_Page {
 	-------------------------------*/
 	/* Protected Properties
 	-------------------------------*/
-	protected $_title = 'Eden';
+	protected $_title = 'JLDMP - Home';
 	protected $_class = 'home';
 	protected $_template = '/index.phtml';
 	

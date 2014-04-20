@@ -10,19 +10,19 @@
     <meta name="<?php print $name; ?>" content="<?php print $content; ?>" />
     <?php endforeach; ?>
     <?php endif; ?>
-		
-	<!-- google web fonts -->
+
+    <!-- google web fonts -->
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css'>
 	<link href='http://fonts.googleapis.com/css?family=Comfortaa:400,300,700' rel='stylesheet' type='text/css'>
 
     <link rel="stylesheet" type="text/css" media="screen" href="/assets/styles/bootstrap.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="/assets/styles/datepicker3.css" />
     <link rel="stylesheet" type="text/css" media="screen" href="/assets/styles/font-awesome.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/assets/styles/control.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/assets/styles/front.css" />
 
-    <link rel="stylesheet" type="text/css" href="/assets/styles/control/<?php echo $class; ?>.css">
+    <link rel="stylesheet" type="text/css" href="/assets/styles/front/<?php echo $class; ?>.css">
 
-	<script type="text/javascript" src="/assets/scripts/jquery.js"></script>
+    <script type="text/javascript" src="/assets/scripts/jquery.js"></script>
 	<script type="text/javascript" src="/assets/scripts/jquery.form.js"></script>
 	<script type="text/javascript" src="/assets/scripts/bootstrap.js"></script>
 	<script type="text/javascript" src="/assets/scripts/bootstrap-datepicker.js"></script>
@@ -31,12 +31,17 @@
 <body>
 	<div class="page">
 		<div class="head"><?php echo $head; ?></div>
+
+		<?php if ($class == 'home'): ?>
+			<div class="banner"><?php include(dirname(__FILE__).'/_banner.phtml'); ?></div>
+		<?php endif ?>
+		
 		<div class="body"><?php echo $body; ?></div>
 		<div class="foot"><?php echo $foot; ?></div>
-		
-		<script type="text/javascript" src="/assets/scripts/control/login.js"></script>
-		<script type="text/javascript" src="/assets/scripts/control.js"></script>
-		<script type="text/javascript" src="/assets/scripts/control/<?php echo $class; ?>.js"></script>
+
+		<script type="text/javascript" src="/assets/scripts/front.js"></script>
+		<script type="text/javascript" src="/assets/scripts/front/<?php echo $class; ?>.js"></script>
+		<script type="text/javascript" src="/assets/scripts/front.js"></script>
     </div>
 </body>
 </html>

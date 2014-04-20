@@ -176,6 +176,7 @@ class Front extends Eden {
 			->set('path', 'config', 	$this->_root.'/config')
 			->set('path', 'theme', 		$this->_root.'/theme')
 			->set('path', 'page', 		$this->_root.'/front/page')
+			->set('path', 'template', 	$this->_root.'/front/template')
 			->set('path', 'library', 	$this->_root.'/library')
 			->set('path', 'web', 		$this->_root.'/web');
 		
