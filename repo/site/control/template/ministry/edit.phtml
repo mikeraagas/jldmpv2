@@ -39,7 +39,7 @@
 						    value="Update Image" id="upload"/>
 
 						    <?php if (isset($post['ministry_image']) && !empty($post['ministry_image'])): ?>
-							    <a href="/ministry/edit/<?php echo $post['ministry_id']; ?>?action=remove_image&id=<?php echo $post['ministry_image']['file_id']; ?>"
+							    <a href="/ministry/edit/<?php echo $post['_id']->{'$id'}; ?>?action=remove_image&id=<?php echo $post['ministry_image']['_id']->{'$id'}; ?>"
 							    class="remove-image-btn btn btn-danger btn-sm">
 									<i class="fa fa-times-circle"></i>&nbsp; Remove Image
 							    </a>
@@ -56,7 +56,7 @@
 				<form action="" method="post" class="edit-ministry-form clearfix">
 					<div class="ministry-form-settings col-md-6">
 						<h4>Ministry Information</h4><br>
-						<input type="hidden" name="ministry_id" value="<?php echo $post['ministry_id']; ?>">
+						<input type="hidden" name="ministry_id" value="<?php echo $post['_id']->{'$id'}; ?>">
 						<div class="form-group">
 							<label for="ministry_title">Title</label>
 							<input type="text" name="ministry_title" id="ministry_title" class="form-control" placeholder="Ministry Title"
@@ -82,21 +82,21 @@
 					</div>
 					<div class="admin-form-settings col-md-6">
 						<h4>Admin Settings</h4><br>
-						<input type="hidden" name="admin_id" value="<?php echo $post['admin_id']; ?>">
+						<input type="hidden" name="admin_id" value="<?php echo $post['admin']['_id']->{'$id'}; ?>">
 						<div class="form-group">
 							<label for="admin_name">Name</label>
 							<input type="text" name="admin_name" id="admin_name" class="form-control" placeholder="Name"
-							value="<?php echo isset($post['admin_name']) ? $post['admin_name'] : ''; ?>">
+							value="<?php echo isset($post['admin']['admin_name']) ? $post['admin']['admin_name'] : ''; ?>">
 						</div>
 						<div class="form-group">
 							<label for="admin_email">Email</label>
 							<input type="text" name="admin_email" id="admin_email" class="form-control" placeholder="Email"
-							value="<?php echo isset($post['admin_email']) ? $post['admin_email'] : ''; ?>">
+							value="<?php echo isset($post['admin']['admin_email']) ? $post['admin']['admin_email'] : ''; ?>">
 						</div>
 						<div class="form-group">
 							<label for="admin_username">Username</label>
 							<input type="text" name="admin_username" id="admin_username" class="form-control" placeholder="Username"
-							value="<?php echo isset($post['admin_username']) ? $post['admin_username'] : ''; ?>">
+							value="<?php echo isset($post['admin']['admin_username']) ? $post['admin']['admin_username'] : ''; ?>">
 						</div>
 						<div class="form-group">
 							<button type="submit" class="btn btn-info" name="edit_ministry" value="submit"><i class="fa fa-check-square-o"></i>&nbsp; Submit</button>&nbsp;&nbsp;

@@ -78,57 +78,67 @@ class Control_Page_Ministry_Edit extends Control_Page {
 	}
 
 	protected function _getMinistry() {
-		$ministry = $this->_db->search()
-			->setTable('ministry m')
-			->setColumns('m.*', 'a.*')
-			->filterByMinistryId($this->_id)
-			->addInnerJoinOn('admin a', 'a.admin_id = m.ministry_admin')
-			->getRow();
+		$ministryFilter = array('_id' => new MongoId($this->_id));
+		$ministry = $this->_collection['ministry']->findOne($ministryFilter);
 
 		if (empty($ministry)) {
 			header('Location: /ministry');
 			exit;
 		}
 
-		$image = $this->_db->search()
-			->setTable('file')
-			->setColumns('*')
-			->addFilter('file_parent = '.$ministry['ministry_id'].' AND file_active = 1 AND file_type = "ministry"')
-			->getRow();
+		// get ministry admin
+		$adminFilter = array('_id' => new MongoId($ministry['ministry_admin']));
+		$admin = $this->_collection['admin']->findOne($adminFilter);
 
-		$ministry['ministry_image'] = $image;
+		$ministry['admin'] = $admin;
+
+		// get ministry image
+		$filter = array(
+			'file_parent' => $ministry['_id']->{'$id'},
+			'file_active' => 1,
+			'file_type'   => 'ministry');
+
+		$image = $this->_collection['file']->findOne($filter);
+
+		if (!empty($image)) {
+			$ministry['ministry_image'] = $image;
+		}
 
 		return $ministry;
 	}
 
 	protected function _editMinistry($post) {
-		// add admin
-		$adminSettings = array(
-			'admin_name' 	 => $post['admin_name'],
-			'admin_email'    => $post['admin_email'],
-			'admin_username' => $post['admin_username'],
-			'admin_updated'  => time());
+		// update ministry admin
+		$settings = array(
+			'$set' => array(
+				'admin_name'     => $post['admin_name'],
+				'admin_email'    => $post['admin_email'],
+				'admin_username' => $post['admin_username'],
+				'admin_updated'  => $post['admin_name']
+			)
+		);
 
-		$adminfilter[] = array('admin_id=%s', $post['admin_id']);
+		$filter = array('_id' => new MongoId($post['admin_id']));
+		$this->_collection['admin']->update($filter, $settings);
 
-		$this->_db->updateRows('admin', $adminSettings, $adminfilter);
-
-		// add ministry
+		// update ministry
 		$ministrySettings = array(
-			'ministry_title' 		=> $post['ministry_title'],
-			'ministry_description' 	=> $post['ministry_description'],
-			'ministry_active' 		=> $post['ministry_active'],
-			'ministry_updated' 		=> time());
+			'$set' => array(
+				'ministry_title' 		=> $post['ministry_title'],
+				'ministry_description' 	=> $post['ministry_description'],
+				'ministry_active' 		=> $post['ministry_active'],
+				'ministry_updated' 		=> new MongoDate()
+			)
+		);
 
-		$ministryFilter[] = array('ministry_id=%s', $post['ministry_id']);
-
-		$this->_db->updateRows('ministry', $ministrySettings, $ministryFilter);
+		$ministryFilter = array('_id' => new MongoId($post['ministry_id']));
+		$this->_collection['ministry']->update($ministryFilter, $ministrySettings);
 
 		$_SESSION['msg'][] = array(
 			'type' => 'success',
 			'msg'  => 'Ministry successfully updated.');
 
-		header('Location: /ministry');
+		header('Location: /ministry/edit/'.$this->_id);
 		exit;
 	}
 
@@ -147,21 +157,22 @@ class Control_Page_Ministry_Edit extends Control_Page {
 				rename($this->_ministryPath.$this->_fileNames[$key], $this->_ministryPath.$filename);
 
 				// check if image already exists
-				$exists = $this->_db->search()
-					->setTable('file')
-					->setColumns('*')
-					->addFilter('file_parent = '.$this->_id.' AND file_active = 1 AND file_type = "ministry"')
-					->getRow();
+				$filter = array(
+					'file_parent' => $this->_id,
+					'file_active' => 1,
+					'file_type'   => 'ministry');
+
+				$exists = $this->_collection['file']->findOne($filter);
 
 				// if image exists update file and database
 				if (!empty($exists)) {
 					unlink($this->_ministryPath.$exists['file_name']);
 
 					// update datebase file name
-					$settings = array('file_name' => $filename);
-					$filter[] = array('file_id=%s', $exists['file_id']);
+					$settings = array('$set' => array('file_name' => $filename));
+					$filter   = array('_id' => new MongoId($exists['_id']->{'$id'}));
 
-					$this->_db->updateRows('file', $settings, $filter);
+					$this->_collection['file']->update($filter, $settings);
 
 					$_SESSION['msg'][] = array(
 						'type' 	=> 'success',
@@ -171,23 +182,24 @@ class Control_Page_Ministry_Edit extends Control_Page {
 					exit;
 				}
 
-				$settings = array(
+				// add ministry image
+				$fileSettings = array(
 					'file_parent' 	 => $this->_id,
 					'file_name' 	 => $filename,
 					'file_extension' => $this->_fileTypes[$key],
 					'file_type'		 => 'ministry',
 					'file_active'	 => 1,
 					'file_primary'	 => 1,
-					'file_created'	 => time(),
-					'file_updated'	 => time());
+					'file_created'	 => new MongoDate(),
+					'file_updated'	 => new MongoDate());
 
-				$this->_db->insertRow('file', $settings);
+				$this->_collection['file']->insert($fileSettings);
+				
+				// edit ministry updated to time
+				$ministrySettings = array('ministry_updated' => new MongoDate());
+				$ministryFilter   = array('_id', new MongoId($this->_id));
 
-				// edit event update time
-				$settings 		  = array('ministry_updated' => time());
-				$ministryFilter[] = array('ministry_id=%s', $this->_id);
-
-				$this->_db->updateRows('ministry', $settings, $ministryFilter);
+				$this->_collection['ministry']->update($ministryFilter, $ministrySettings);
 				continue;
 			}
 
@@ -208,19 +220,18 @@ class Control_Page_Ministry_Edit extends Control_Page {
 	}
 
 	protected function _removeImage($id) {
-		$image = $this->_db->search()
-			->setTable('file')
-			->setColumns('*')
-			->addFilter('file_id = '.$id.' AND file_parent = '.$this->_id.' AND file_type = "ministry"')
-			->getRow();
+		$filter = array(
+			'_id' 	  => new MongoId($id),
+			'file_parent' => $this->_id,
+			'file_active' => 1,
+			'file_type'   => 'ministry');
 
-		$filter[] = array('file_id=%s', $id);
-		$filter[] = array('file_parent=%s', $this->_id);
-		$filter[] = array('file_type=%s', 'ministry');
+		$image = $this->_collection['file']->findOne($filter);
 
-		$this->_db->deleteRows('file', $filter);
+		$filter = array('_id' => new MongoId($id));
+		$this->_collection['file']->remove($filter, array('justOne' => true));
 
-		unlink($this->_minstryPath.$image['file_name']);
+		unlink($this->_ministryPath.$image['file_name']);
 
 		$_SESSION['msg'][] = array(
 			'type'  => 'success',

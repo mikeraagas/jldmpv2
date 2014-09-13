@@ -51,9 +51,6 @@ class Control_Page_Event_Edit extends Control_Page {
 			$this->_post = $_POST;
 		}
 
-		// control()->output($this->_post);
-		// exit;
-
 		$this->_renderMsg();
 		
 		$this->_body = array(
@@ -86,20 +83,22 @@ class Control_Page_Event_Edit extends Control_Page {
 	}
 
 	protected function _getEvent() {
-		$event = $this->_db->search()
-			->setTable('event')
-			->setColumns('*')
-			->addFilter('event_id = "'.$this->_id.'"')
-			->getRow();
+		// get event
+		$eventFilter = array('_id' => new MongoId($this->_id));
 
-		$images = $this->_db->search()
-			->setTable('file')
-			->setColumns('*')
-			->addFilter('file_parent = '.$event['event_id'].' AND file_type = "event" AND file_active = 1')
-			->getRows();
+		$event = $this->_collection['event']->findOne($eventFilter);
+		$eventId = $event['_id']->{'$id'};
+
+		$imagesFilter = array(
+			'file_parent' => $eventId,
+			'file_type'   => 'event',
+			'file_active' => 1);
+
+		// get event images
+		$query  = $this->_collection['file']->find($imagesFilter);
+		$images = iterator_to_array($query);
 
 		$event['event_images'] = $images;
-
 		return $event;
 	}
 
@@ -109,11 +108,11 @@ class Control_Page_Event_Edit extends Control_Page {
 			'event_text'  	=> $post['event_text'],
 			'event_start'	=> strtotime($post['event_start']),
 			'event_end'		=> strtotime($post['event_end']),
-			'event_active'	=> $post['event_active'],
-			'event_updated'	=> time());
+			'event_active'	=> (int) $post['event_active'],
+			'event_updated'	=> new MongoDate());
 
-		$filter[] = array('event_id=%s', $this->_id);
-		$this->_db->updateRows('event', $settings, $filter);
+		$filter = array('_id' => new MongoId($this->_id));
+		$this->_collection['event']->update($filter, array('$set' => $settings));
 
 		$_SESSION['msg'][] = array(
 			'type' => 'success',
@@ -126,12 +125,17 @@ class Control_Page_Event_Edit extends Control_Page {
 	protected function _setPrimaryImage($id) {
 		// set existing primary image to 0
 		$settings = array('file_primary' => 0);
-		$filter[] = array('file_parent=%s', $this->_id);
-		$filter[] = array('file_primary=%s', 1);
-		$filter[] = array('file_type=%s', 'event');
+		$filter = array(
+			'file_parent'  => $this->_id,
+			'file_primary' => 1,
+			'file_type'    => 'event');
 
-		$this->_db->updateRows('file', $settings, $filter);
-		$this->_updateDbPrimary($id);
+		$this->_collection['file']->update($filter, array('$set' => $settings));
+
+		// update file set primary
+		$primarySettings = array('file_primary' => 1);
+		$primaryFilter   = array('_id' => new MongoId($id));
+		$this->_collection['file']->update($primaryFilter, array('$set' => $primarySettings));
 
 		$_SESSION['msg'][] = array(
 			'type' => 'success',
@@ -168,17 +172,20 @@ class Control_Page_Event_Edit extends Control_Page {
 					'file_extension' => $this->_fileTypes[$key],
 					'file_type'		 => 'event',
 					'file_active'	 => 1,
-					'file_created'	 => time(),
-					'file_updated'	 => time());
+					'file_primary'   => 0,
+					'file_created'	 => new MongoDate(),
+					'file_updated'	 => new MongoDate());
 
 				// check primary is already set
-				$this->_db->insertRow('file', $settings);
+				if (!$this->_checkIfPrimary()) { $settings['file_primary'] = 1; }
+
+				$this->_collection['file']->insert($settings);
 
 				// edit event update time
-				$settings = array('event_updated' => time());
-				$filter[] = array('event_id=%s', $this->_id);
+				$settings = array('event_updated' => new MongoDate());
+				$filter = array('_id' => new MongoId($this->_id));
 
-				$this->_db->updateRows('event', $settings, $filter);
+				$this->_collection['event']->update($filter, array('$set' => $settings));
 				continue;
 			}
 
@@ -200,18 +207,34 @@ class Control_Page_Event_Edit extends Control_Page {
 		$this->_redirect();
 	}
 
+	protected function _checkIfPrimary() {
+		$filter = array(
+			'file_parent' => $this->_id,
+			'file_active' => 1,
+			'file_type'   => 'event');
+
+		$query = $this->_collection['file']->find($filter);
+		$images = iterator_to_array($query);
+
+		foreach ($images as $key => $image) {
+			if ($image['file_primary'] == 1) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	protected function _removeEventImage($id) {
-		$image = $this->_db->search()
-			->setTable('file')
-			->setColumns('*')
-			->addFilter('file_id = '.$id.' AND file_parent = '.$this->_id.' AND file_type = "event"')
-			->getRow();
+		$fileFilter = array('_id' => new MongoId($id));
+		$image = $this->_collection['file']->findOne($fileFilter);
 
-		$filter[] = array('file_id=%s', $id);
-		$filter[] = array('file_parent=%s', $this->_id);
-		$filter[] = array('file_type=%s', 'event');
+		$filter = array(
+			'_id'         => new MongoId($id),
+			'file_parent' => $this->_id,
+			'file_type'   => 'event');
 
-		$this->_db->deleteRows('file', $filter);
+		$this->_collection['file']->remove($filter, array('justOne' => true));
 
 		unlink($this->_eventPath.$image['file_name']);
 

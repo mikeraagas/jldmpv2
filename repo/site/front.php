@@ -97,6 +97,10 @@ class Front extends Eden {
 				case 'sqlite':
 					$database = Eden_Sqlite::i($info['file']);
 					break;
+				case 'mongo':
+					$mongo = new MongoClient();
+					$database = $mongo->selectDB($info['name']);
+					break;
 			}
 			
 			$this->registry()->set('database', $key, $database);
@@ -173,7 +177,7 @@ class Front extends Eden {
 		$this->registry()
 			->set('path', 'root', 		$this->_root)
 			->set('path', 'module', 	$this->_root.'/module')
-			->set('path', 'config', 	$this->_root.'/config')
+			->set('path', 'config', 	$this->_root.'/../../config')
 			->set('path', 'theme', 		$this->_root.'/theme')
 			->set('path', 'page', 		$this->_root.'/front/page')
 			->set('path', 'template', 	$this->_root.'/front/template')
@@ -375,6 +379,20 @@ class Front extends Eden {
 			->set('line', $line)
 			->set('message', $message)
 			->parsePhp(dirname(__FILE__).'/front/error.phtml');
+	}
+
+	/**
+	 * Returns the default database instance
+	 *
+	 * @return Eden_Database_Abstract
+	 */
+	public function getDatabase($key = NULL) {
+		if(is_null($key)) {
+			//return the default database
+			return $this->_database;
+		}
+
+		return $this->_registry->get('database', $key);
 	}
 	
 	/* Protected Methods

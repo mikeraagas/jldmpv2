@@ -25,24 +25,23 @@ $(document).ready(function(){
 
 			if ($this.val() == '' || $this.val().length == 0) {
 				$('span.js-error-msg').html(require_error);
-				console.log($this.val());
 				validate = false;
-			};
-		})
+			}
+		});
 
-		if (validate == false) { return false; };
+		if (validate == false) { return false; }
 
 		// check if ministry active has value
 		if (!active) {
 			$('span.js-error-msg').html(require_error);
 			validate = false;
-		};
+		}
 
 		// username must 6 or more characters
 		if (username.length < 5) {
 			$('span.js-error-msg').html(username_error);
 			validate = false;
-		};
+		}
 
 		if (type == 'add') {
 			// if password did not match
@@ -56,7 +55,7 @@ $(document).ready(function(){
 				$('span.js-error-msg').html(password_error);
 				validate = false;
 			};
-		};
+		}
 
 		return validate;
 	}
@@ -77,10 +76,16 @@ $(document).ready(function(){
 		};
 	});
 
+	// remove ministry confirmation
+	$('a.remove-ministry').click(function(){
+		if (confirm('Are you sure?')) { return true; };
+		return false;
+	});
+
 	// ------------------- Ministry Member Scripts ------------------- //
 
 	$('a.remove-member').click(function(){
-		if (!confirm('Are you sure?')) { return false; };
-		return true;
+		if (confirm('Are you sure?')) { return true; };
+		return false;
 	});
 });

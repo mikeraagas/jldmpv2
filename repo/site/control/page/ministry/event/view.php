@@ -33,7 +33,7 @@ class Control_Page_Ministry_Event_View extends Control_Page {
 
 		if ($this->_id == null) { header('Location: /ministry/'.$this->_ministry.'/events'); exit; }
 
-		$event 	= $this->_getEvent();
+		$event = $this->_getEvent();
 
 		$this->_body = array(
 			'class' 		=> 'event',
@@ -47,20 +47,24 @@ class Control_Page_Ministry_Event_View extends Control_Page {
 	/* Protected Methods
 	-------------------------------*/
 	protected function _getEvent() {
-		$event = $this->_db->search()
-			->setTable('event')
-			->setColumns('*')
-			->addFilter('event_id = "'.$this->_id.'" AND event_ministry = "'.$this->_ministry.'"')
-			->getRow();
+		// get event
+		$eventFilter = array(
+			'_id'            => new MongoId($this->_id),
+			'event_ministry' => $this->_ministry);
 
-		$images = $this->_db->search()
-			->setTable('file')
-			->setColumns('*')
-			->addFilter('file_parent = '.$event['event_id'].' AND file_type = "event" AND file_active = 1')
-			->getRows();
+		$event = $this->_collection['event']->findOne($eventFilter);
+		$eventId = $event['_id']->{'$id'};
+
+		$imagesFilter = array(
+			'file_parent' => $eventId,
+			'file_type'   => 'event',
+			'file_active' => 1);
+
+		// get event images
+		$query  = $this->_collection['file']->find($imagesFilter);
+		$images = iterator_to_array($query);
 
 		$event['event_images'] = $images;
-
 		return $event;
 	}
 

@@ -16,7 +16,9 @@ class Control_Page_Login extends Control_Page {
 	protected $_title    = 'JLDMP - Control';
 	protected $_class    = 'login';
 	protected $_template = '/login.phtml';
-	protected $_msg   	 = array();
+
+	protected $_collection = null;
+	protected $_msg   	   = array();
 	
 	/* Private Properties
 	-------------------------------*/
@@ -25,6 +27,8 @@ class Control_Page_Login extends Control_Page {
 	/* Public Methods
 	-------------------------------*/
 	public function render() {
+		$this->_collection = new MongoCollection($this->_db, 'admin');
+
 		if (isset($_POST['login'])) {
 			$this->_login();
 		}
@@ -46,14 +50,14 @@ class Control_Page_Login extends Control_Page {
 		$username = $_POST['username'];
 		$password = $_POST['password'];
 
-		$adminInfo = $this->_db->search('admin')
-			->setColumns('*')
-			->filterByAdminUsername($username)
-			->filterByAdminPassword(md5($password))
-			->getRow();
+		$filter = array(
+			'admin_username' => $username,
+			'admin_password' => md5($password));
 
-		if (empty($adminInfo)) {
-			$_SESSION['msg'] = array(
+		$admin = $this->_collection->findOne($filter);
+
+		if (empty($admin)) {
+			$_SESSION['msg'][] = array(
 				'type' => 'danger',
 				'msg' => 'Incorrect username or password');
 
@@ -62,10 +66,10 @@ class Control_Page_Login extends Control_Page {
 		}
 
 		$loginSession = array(
-			'admin_id' 			=> $adminInfo['admin_id'],
-			'admin_name' 		=> $adminInfo['admin_name'],
-			'admin_username' 	=> $adminInfo['admin_username'],
-			'admin_email' 		=> $adminInfo['admin_email']);
+			'admin_id' 			=> $admin['_id']->{'$id'},
+			'admin_name' 		=> $admin['admin_name'],
+			'admin_username' 	=> $admin['admin_username'],
+			'admin_email' 		=> $admin['admin_email']);
 
 		$_SESSION['admin'] = $loginSession;
 

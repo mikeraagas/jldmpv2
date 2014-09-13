@@ -23,6 +23,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 .clear { clear: both; }
 .btn { border-radius: 0; }
 .alert { padding: 10px 15px !important; }
+.breadcrumb { border-radius: 0; }
 
 input[type="text"], input[type="email"], input[type="password"], select, button { border-radius: 0 !important; font-size: 12px !important; }
 textarea { border-radius: 0 !important; font-size: 12px !important; }

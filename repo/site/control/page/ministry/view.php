@@ -16,7 +16,7 @@ class Control_Page_Ministry_View extends Control_Page {
 	protected $_title    = 'JLDMP - Control';
 	protected $_class    = 'ministry';
 	protected $_template = '/ministry/view.phtml';
-	
+
 	/* Private Properties
 	-------------------------------*/
 	/* Magic
@@ -30,7 +30,7 @@ class Control_Page_Ministry_View extends Control_Page {
 
 		$this->_body = array(
 			'class'			=> 'view',
-			'ministry_id' 	=> $detail['ministry']['ministry_id'],
+			'ministry_id' 	=> $detail['ministry']['_id']->{'$id'},
 			'ministry' 		=> $detail['ministry'],
 			'admin'    		=> $detail['admin']);
 
@@ -40,17 +40,22 @@ class Control_Page_Ministry_View extends Control_Page {
 	/* Protected Methods
 	-------------------------------*/
 	protected function _getMinistry() {
-		$ministry = $this->_db->search()
-			->setTable('ministry')
-			->setColumns('*')
-			->filterByMinistryId($this->_id)
-			->getRow();
+		$ministryFilter = array('_id' => new MongoId($this->_id));
+		$ministry = $this->_collection['ministry']->findOne($ministryFilter);
 
-		$admin = $this->_db->search()
-			->setTable('admin')
-			->setColumns('admin_name, admin_email')
-			->filterByAdminId($ministry['ministry_admin'])
-			->getRow();
+		$filter = array(
+			'file_parent' => $ministry['_id']->{'$id'},
+			'file_active' => 1,
+			'file_type'   => 'ministry');
+
+		$image = $this->_collection['file']->findOne($filter);
+
+		if (!empty($image)) {
+			$ministry['ministry_image'] = $image;
+		}
+
+		$adminFilter = array('_id' => new MongoId($ministry['ministry_admin']));
+		$admin = $this->_collection['admin']->findOne($adminFilter);
 
 		$detail = array(
 			'ministry' => $ministry,

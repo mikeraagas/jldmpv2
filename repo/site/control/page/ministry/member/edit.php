@@ -44,9 +44,6 @@ class Control_Page_Ministry_Member_Edit extends Control_Page {
 		$this->_post = $this->_getMember();
 		$this->_post = $this->_getMemberImage($this->_post);
 
-		// control()->output($this->_post);
-		// exit;
-
 		if (isset($_POST['edit_member'])) {
 			if ($this->_validate($_POST)) {
 				$this->_editMember($_POST);
@@ -86,22 +83,21 @@ class Control_Page_Ministry_Member_Edit extends Control_Page {
 	}
 
 	protected function _getMember() {
-		$member = $this->_db->search()
-			->setTable('member m')
-			->setColumns('m.*')
-			->addInnerJoinOn('`group` g', 'g.group_member = m.member_id')
-			->addFilter('g.group_ministry = '.$this->_ministry.' AND m.member_id = '.$this->_id)
-			->getRow();
+		$filter = array(
+			'_id'             => new MongoId($this->_id),
+			'member_ministry' => $this->_ministry);
 
+		$member = $this->_collection['member']->findOne($filter);
 		return $member;
 	}
 
 	protected function _getMemberImage($member) {
-		$image = $this->_db->search()
-			->setTable('file')
-			->setColumns('*')
-			->addFilter('file_parent = '.$member['member_id'].' AND file_active = 1 AND file_type = "member"')
-			->getRow();
+		$filter = array(
+			'file_parent' => $member['_id']->{'$id'},
+			'file_active' => 1,
+			'file_type'   => 'member');
+
+		$image = $this->_collection['file']->findOne($filter);
 
 		$member['member_image'] = $image;
 		return $member;
@@ -116,11 +112,11 @@ class Control_Page_Ministry_Member_Edit extends Control_Page {
 			'member_age'      => $post['member_age'],
 			'member_type'     => $post['member_type'],
 			'member_gender'   => $post['member_gender'],
-			'member_active'   => $post['member_active'],
-			'member_updated'  => time());
+			'member_active'   => (int) $post['member_active'],
+			'member_updated'  => new MongoDate());
 
-		$filter[] = array('member_id=%s', $this->_id);
-		$this->_db->updateRows('member', $settings, $filter);
+		$filter = array('_id' => new MongoId($this->_id));
+		$this->_collection['member']->update($filter, array('$set' => $settings));
 
 		$_SESSION['msg'][] = array(
 			'type' => 'success',
@@ -144,38 +140,42 @@ class Control_Page_Ministry_Member_Edit extends Control_Page {
 				
 				rename($this->_memberPath.$this->_fileNames[$key], $this->_memberPath.$filename);
 
-				// check if profile image already exists
-				$exists = $this->_db->search()
-					->setTable('file')
-					->setColumns('*')
-					->addFilter('file_parent = '.$this->_id.' AND file_type = "member" AND file_active = 1 AND file_primary = 1')
-					->getRow();
+				// check if image already exists
+				$existsFilter = array(
+					'file_parent'  => $this->_id,
+					'file_active'  => 1,
+					'file_primary' => 1,
+					'file_type'    => 'member');
+
+				$exists = $this->_collection['file']->findOne($existsFilter);
 
 				if (!empty($exists)) {
-					$filter[] = array('file_id=%s', $exists['file_id']);
-					$filter[] = array('file_parent=%s', $this->_id);
-					$this->_db->deleteRows('file', $filter);
+					$removeFileFilter = array(
+						'_id'         => new MongoId($exists['_id']),
+						'file_parent' => $this->_id);
+
+					$this->_collection['file']->remove($removeFileFilter, array('justOne' => true));
 
 					unlink($this->_memberPath.$exists['file_name']);
 				}
 
-				$settings = array(
+				$fileSettings = array(
 					'file_parent' 	 => $this->_id,
 					'file_name' 	 => $filename,
 					'file_extension' => $this->_fileTypes[$key],
 					'file_type'		 => 'member',
 					'file_active'	 => 1,
 					'file_primary'	 => 1,
-					'file_created'	 => time(),
-					'file_updated'	 => time());
+					'file_created'	 => new MongoDate(),
+					'file_updated'	 => new MongoDate());
 
-				$this->_db->insertRow('file', $settings);
+				$this->_collection['file']->insert($fileSettings);
 
 				// edit event update time
-				$settings 		= array('member_updated' => time());
-				$memberFilter[] = array('member_id=%s', $this->_id);
+				$memberSettings = array('member_updated' => new MongoDate());
+				$memberFilter   = array('_id' => new MongoId($this->_id));
 
-				$this->_db->updateRows('member', $settings, $memberFilter);
+				$this->_collection['member']->update($memberFilter, array('$set' => $memberSettings));
 				continue;
 			}
 
@@ -196,17 +196,17 @@ class Control_Page_Ministry_Member_Edit extends Control_Page {
 	}
 
 	protected function _removeImage($id) {
-		$image = $this->_db->search()
-			->setTable('file')
-			->setColumns('*')
-			->addFilter('file_id = '.$id.' AND file_parent = '.$this->_id.' AND file_type = "member"')
-			->getRow();
+		// remove member image
+		$fileFilter = array(
+			'_id'         => new MongoId($id),
+			'file_parent' => $this->_id,
+			'file_type'   => 'member');
 
-		$filter[] = array('file_id=%s', $id);
-		$filter[] = array('file_parent=%s', $this->_id);
-		$filter[] = array('file_type=%s', 'member');
+		// get file id
+		$image = $this->_collection['file']->findOne($fileFilter);
 
-		$this->_db->deleteRows('file', $filter);
+		$removeFileFilter = array('_id' => new MongoId($id));
+		$this->_collection['file']->remove($removeFileFilter, array('justOne' => true));
 
 		unlink($this->_memberPath.$image['file_name']);
 

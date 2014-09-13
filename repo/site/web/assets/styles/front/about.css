@@ -1,0 +1,62 @@
+
+.about-container .about-header {
+	background: url(/assets/images/about-banner.jpg);
+	height: 210px;
+	margin-bottom: 20px;
+	position: relative;
+}
+.about-container .header-wrap {
+	background-color: rgba(0,0,0,0.60);
+	padding: 20px;
+	position: absolute;
+	bottom: 0%;
+	width: 1100px;
+}
+.about-container .about-header .header-wrap  h3 {
+	color: #fff;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: bold;
+	margin-top: 0;
+	text-transform: uppercase;
+}
+.about-container .about-header .header-wrap  .breadcrumb {
+	border-radius: 0;
+	background-color: transparent;
+	padding: 8px 0;
+	margin-bottom: 0;
+}
+.about-container .about-header .breadcrumb li a { color: #fff; }
+.about-container .about-header .breadcrumb li.active { color: #fff; }
+
+.about-container .about-content { margin-bottom: 20px; }
+.about-container .about-content .about-main { float: left; margin-right: 40px; width: 815px; }
+.about-container .about-content .about-sidebar { float: left; width: 245px; }
+
+.about-container .about-main .main-description { color: #239fdb; font-size: 14px; }
+.about-container .about-main .mission { margin: 20px 0; }
+.about-container .about-main .mission h5 {
+	font-family: 'Montserrat' sans-serif;
+	text-transform: uppercase;
+	margin-bottom: 20px;
+}
+.about-container .about-main .mission blockquote { border-left: 6px solid #ddd; font-size: 14px; }
+
+.about-container .about-sidebar .sidebar-header { margin-bottom: 20px; }
+.about-container .about-sidebar .sidebar-header h5 {
+	display: inline-block;
+	float: left;
+	font-family: 'Montserrat' sans-serif;
+	margin: 0;
+	position: relative;
+	text-transform: uppercase;
+}
+.about-container .about-sidebar .sidebar-header h5:after {
+	content: '';
+	border-top: 1px solid #ddd;
+	height: 3px;
+	position: absolute;
+	top: 9px;
+	width:95px;
+	left: 70px;
+}
+.about-container .about-sidebar .sidebar-header .view-more { float: right; }

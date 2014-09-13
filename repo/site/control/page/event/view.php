@@ -44,17 +44,16 @@ class Control_Page_Event_View extends Control_Page {
 	/* Protected Methods
 	-------------------------------*/
 	protected function _getEvent() {
-		$event = $this->_db->search()
-			->setTable('event')
-			->setColumns('*')
-			->addFilter('event_id = "'.$this->_id.'"')
-			->getRow();
+		$eventFilter = array('_id' => new MongoId($this->_id));
+		$event = $this->_collection['event']->findOne($eventFilter);
 
-		$images = $this->_db->search()
-			->setTable('file')
-			->setColumns('*')
-			->addFilter('file_parent = '.$event['event_id'].' AND file_type = "event" AND file_active = 1')
-			->getRows();
+		$filter = array(
+			'file_parent' => $event['_id']->{'$id'},
+			'file_active' => 1,
+			'file_type'   => 'event');
+
+		$query  = $this->_collection['file']->find($filter);
+		$images = iterator_to_array($query);
 
 		$event['event_images'] = $images;
 

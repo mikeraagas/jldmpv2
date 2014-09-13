@@ -19,9 +19,10 @@ class Control_Page_Ministry_Members extends Control_Page {
 	protected $_class    = 'ministry';
 	protected $_template = '/ministry/members.phtml';
 
-	protected $_ministry = null;
-	protected $_var		 = null;
-	protected $_msg 	 = array();	
+	protected $_ministry   = null;
+	protected $_memberPath = null;
+	protected $_var		   = null;
+	protected $_msg 	   = array();	
 	
 	/* Private Properties
 	-------------------------------*/
@@ -33,18 +34,18 @@ class Control_Page_Ministry_Members extends Control_Page {
 		$this->_ministry = isset($this->_request['variables'][0]) ? $this->_request['variables'][0] : null;
 		$this->_var 	 = isset($this->_request['variables'][1]) ? $this->_request['variables'][1] : null;
 
+		// set file upload member path
+		$this->_memberPath = dirname(__FILE__).'/../../../../../uploads/member/';
+
 		if (isset($_GET['action']) && $_GET['action'] == 'deleteMember') { $this->_deleteMember($_GET['id']); }
+
+		$members = $this->_getMembers();
+		$members = $this->_getMemberImages($members);
 
 		// set pagination
 		$pg    = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
 		$count = $this->_countMembers();
 		$pages = ceil($count/self::RANGE);
-
-		$members = $this->_getMembers();
-		$members = $this->_getMemberImage($members);
-
-		// control()->output($members);
-		// exit;
 
 		$this->_renderMsg();
 
@@ -67,68 +68,70 @@ class Control_Page_Ministry_Members extends Control_Page {
 		$start 	= ($pg-1) * self::RANGE;
 		$filter = $this->_setFilter();
 
-		$q = $this->_db->search()
-			->setTable('member m')
-			->setColumns('m.*')
-			->addInnerJoinOn('`group` g', 'g.group_member = m.member_id')
-			->addFilter('g.group_ministry = '.$this->_ministry);
+		$query = $this->_collection['member']->find($filter)
+			->skip($start)
+			->limit(self::RANGE)
+			->sort(array('ministry_updated' => -1));
 
-		if ($filter != '') { $q = $q->addFilter($filter); }
-
-		$members = $q->addSort('m.member_updated', 'DESC')
-			->setStart($start)
-			->setRange(self::RANGE)
-			->getRows();
-
+		$members = iterator_to_array($query);		
 		return $members;
 	}
 
-	protected function _getMemberImage($members) {
+	protected function _getMemberImages($members) {
 		foreach ($members as $key => $member) {
-			$images = $this->_db->search()
-				->setTable('file')
-				->setColumns('*')
-				->addFilter('file_parent = '.$member['member_id'].' AND file_active = 1 AND file_primary = 1 AND file_type = "member"')
-				->getRow();
+			$filter = array(
+				'file_parent' => $member['_id']->{'$id'},
+				'file_active' => 1,
+				'file_type'   => 'member');
 
-			$members[$key]['member_image'] = $images;
+			$image = $this->_collection['file']->findOne($filter);
+
+			$members[$key]['member_image'] = $image;
 		}
 
 		return $members;
 	}
 
 	protected function _countMembers() {
-		$q = $this->_db->search()
-			->setTable('member m')
-			->setColumns('count(*) as c')
-			->addInnerJoinOn('`group` g', 'g.group_member = m.member_id')
-			->addFilter('g.group_ministry = '.$this->_ministry);
+		$filter = $this->_setFilter();
+		$query  = $this->_collection['member']->find($filter);
+		$count  = $query->count();
 
-		if (isset($_GET['q'])) { $q = $q->addFilter('m.member_fullname like "%'.$_GET['q'].'%"'); }
-
-		$count = $q->getRow();
-
-		return $count['c'];
+		return $count;
 	}
 
 	protected function _setFilter() {
-		$filter = '';
+		$filter = array(
+			'member_ministry' => $this->_ministry,
+			'member_active'   => 1);
 
 		switch ($this->_var) {
-			case 'active':		$filter = 'm.member_active = 1'; break;
-			case 'not-active':	$filter = 'm.member_active = 0'; break;
-			case 'request':		$filter = 'm.member_active = 2'; break;
+			case 'active':		$filter['member_active'] = 1; break;
+			case 'not-active':	$filter['member_active'] = 0; break;
+			case 'request':		$filter['member_active'] = 2; break;
 		}
 
-		if ($filter != '' && isset($_GET['q'])) { $filter .= ' AND '; }
-		if (isset($_GET['q'])) { $filter .= 'm.member_fullname like "%'.$_GET['q'].'%"'; }
+		if (isset($_GET['q'])) { $filter['member_name'] = $_GET['q']; }
 		
 		return $filter;
 	}
 
 	protected function _deleteMember($id) {
-		$filter[] = array('member_id=%s', $id);
-		$this->_db->deleteRows('member', $filter);
+		$filter = array('_id' => new MongoId($id));
+		$this->_collection['member']->remove($filter, array('justOne' => true));
+
+		// remove member image
+		$fileFilter = array(
+			'file_parent' => $id,
+			'file_type'   => 'member');
+
+		// get file id
+		$file = $this->_collection['file']->findOne($fileFilter);
+
+		$removeFileFilter = array('_id' => new MongoId($file['_id']));
+		$this->_collection['file']->remove($removeFileFilter, array('justOne' => true));
+		
+		unlink($this->_memberPath.$file['file_name']);
 
 		$_SESSION['msg'][] = array(
 			'type' => 'success',

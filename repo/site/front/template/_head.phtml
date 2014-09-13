@@ -1,28 +1,46 @@
-<header class="main-header row">
-	<div class="header-logo col-md-6">
-		<h1>JLDMP</h1>
-		<p>Jesus Lord of Divine Mercy Parish</p><br>
+<div class="top-header">
+	<div class="header-container clearfix">
+		<div class="column first-column">
+			<p class="contact-us">Contact us at: 555 555 1234</p>
+		</div>
+		<div class="column second-column">
+			<form action="" method="post">
+				<input type="text" class="form-control" name="keyword" placeholder="SEARCH">
+			</form>
+		</div>
+		<div class="column third-column">
+			<ul>
+				<li><a href="#"><i class="fa fa-facebook"></i></a></li>
+				<li><a href="#"><i class="fa fa-pinterest"></i></a></li>
+				<li><a href="#"><i class="fa fa-twitter"></i></a></li>
+				<li><a href="#"><i class="fa fa-instagram"></i></a></li>
+				<li><a href="#"><span class="sign-in">Sign in</span></a></li>
+			</ul>
+		</div>
 	</div>
-	<nav class="main-navigation col-md-6">
-		<ul class="nav nav-pills">
-			<li class="active"><a href="#">Home</a></li>
-			<li><a href="#">Ministry</a></li>
-			<li><a href="#">Events</a></li>
-			<li><a href="#">Schedule</a></li>
-			<li class="btn-group">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Social <span class="caret"></span></a>
-				<ul class="dropdown-menu" role="menu">
-					<li><a href="#">Question and Answer</a></li>
-					<li><a href="#">Chat</a></li>
-				</ul>
-			</li>
-			<li class="btn-group">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Login <span class="caret"></span></a>
-				<ul class="dropdown-menu" role="menu">
-					<li><a href="#"><i class="fa fa-facebook"></i> Facebook</a></li>
-					<li><a href="#"><i class="fa fa-twitter"></i> Twitter</a></li>
-				</ul>
-			</li>
-		</ul>
-	</nav>
-</header>
+</div>
+
+<div class="bottom-header">
+	<div class="header-container clearfix">
+		<div class="column first-column">
+			<div class="header-logo">
+				<h1>JLDMP</h1>
+				<p class="logo-small">Jesus Lord of Divine Mercy Parish</p>
+			</div>
+		</div>
+		<div class="column second-column">
+			<ul>
+				<li class="<?php echo $page == 'home' ? 'active' : ''; ?>"><a href="/">Home</a></li>
+				<li class="<?php echo $page == 'about' ? 'active' : ''; ?>"><a href="/about">About</a></li>
+				<li class="<?php echo $page == 'ministries' ? 'active' : ''; ?>"><a href="/ministries">Ministries</a></li>
+				<li class="<?php echo $page == 'sermons' ? 'active' : ''; ?>"><a href="/sermons">Sermons</a></li>
+				<li class="<?php echo $page == 'events' ? 'active' : ''; ?>"><a href="/events">Events</a></li>
+				<li class="<?php echo $page == 'gallery' ? 'active' : ''; ?>"><a href="/gallery">Gallery</a></li>
+				<li class="<?php echo $page == 'faqs' ? 'active' : ''; ?>"><a href="/faqs">FAQS</a></li>
+				<li class="<?php echo $page == 'schedule' ? 'active' : ''; ?>"><a href="/schedule">Schedule</a></li>
+				<li class="<?php echo $page == 'store' ? 'active' : ''; ?>"><a href="/store">Store</a></li>
+				<li class="donate"><a href="/donate">Donate</a></li>
+			</ul>
+		</div>
+	</div>
+</div>

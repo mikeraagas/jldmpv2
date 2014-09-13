@@ -53,42 +53,38 @@ class Control_Page_Ministry_Member_View extends Control_Page {
 	/* Protected Methods
 	-------------------------------*/
 	protected function _getMember() {
-		$member = $this->_db->search()
-			->setTable('member m')
-			->setColumns('m.*')
-			->addInnerJoinOn('`group` g', 'g.group_member = m.member_id')
-			->addFilter('g.group_ministry = '.$this->_ministry.' AND m.member_id = '.$this->_id)
-			->getRow();
+		$filter = array(
+			'_id'             => new MongoId($this->_id),
+			'member_ministry' => $this->_ministry);
 
+		$member = $this->_collection['member']->findOne($filter);
 		return $member;
 	}
 
 	protected function _getMemberImage($member) {
-		$image = $this->_db->search()
-			->setTable('file')
-			->setColumns('*')
-			->addFilter('file_parent = '.$this->_id.' AND file_active = 1 AND file_type = "member"')
-			->getRow();
+		$filter = array(
+			'file_parent' => $member['_id']->{'$id'},
+			'file_active' => 1,
+			'file_type'   => 'member');
+
+		$image = $this->_collection['file']->findOne($filter);
 
 		$member['member_image'] = $image;
 		return $member;
 	}
 
 	protected function _getMinistries() {
-		// get affiliated ministries
-		$groups = $this->_db->search()
-			->setTable('`group`')
-			->setColumns('*')
-			->filterByGroupMember($this->_id)
-			->getRows();
+		$filter = array(
+			'_id'             => new MongoId($this->_id),
+			'member_ministry' => $this->_ministry);
 
-		$ministries = array();	
-		foreach ($groups as $group) {
-			$ministry = $this->_db->search()
-				->setTable('ministry')
-				->setColumns('*')
-				->filterByMinistryId($group['group_ministry'])
-				->getRow();
+		$member = $this->_collection['member']->findOne($filter);
+		$memberMinistries = $member['member_ministry'];
+
+		$ministries = array();
+		foreach ($memberMinistries as $ministryId) {
+			$filter   = array('_id' => new MongoId($ministryId));
+			$ministry = $this->_collection['ministry']->findOne($filter);
 
 			$ministries[] = $ministry;
 		}

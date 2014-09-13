@@ -32,35 +32,35 @@
 					<?php if (!empty($ministries)): ?>
 						<?php foreach ($ministries as $ministry): ?>
 							<tr>
-								<td><?php echo $ministry['ministry_id']; ?></td>
+								<td><?php echo $ministry['_id']->{'$id'}; ?></td>
 								<td>
 									<div class="img-thumbnail">
-										<?php if (!empty($ministry['ministry_image'])): ?>
+										<?php if (!empty($ministry['ministry_image']['file_name'])): ?>
 											<img src="/uploads/ministry/<?php echo $ministry['ministry_image']['file_name']; ?>" width="80">
 										<?php else: ?>
 											<img src="/assets/images/placeholder.png" width="80">
 										<?php endif ?>
 									</div>
 								</td>
-								<td><a href="#"><?php echo $ministry['ministry_title']; ?></a></td>
-								<td><?php echo $ministry['admin_name']; ?></td>
+								<td><a href="/ministry/view/<?php echo $ministry['_id']->{'$id'}; ?>"><?php echo $ministry['ministry_title']; ?></a></td>
+								<td><?php echo $ministry['admin']['admin_name']; ?></td>
 								<td><?php echo ($ministry['ministry_active'] == '1') ? 'Yes' : 'No'; ?></td>
 								<td width="250" class="ministry-actions">
-									<a href="/ministry/view/<?php echo $ministry['ministry_id']; ?>" class="btn btn-info btn-xs">
+									<a href="/ministry/view/<?php echo $ministry['_id']->{'$id'}; ?>" class="btn btn-info btn-xs">
 										<i class="fa fa-share"></i>&nbsp; View
 									</a>
-									<a href="/ministry/edit/<?php echo $ministry['ministry_id'] ?>" class="btn btn-info btn-xs">
+									<a href="/ministry/edit/<?php echo $ministry['_id']->{'$id'}; ?>" class="btn btn-info btn-xs">
 										<i class="fa fa-pencil-square"></i>&nbsp; Edit
 									</a>
 
-									<a href="#" class="remove-ministry btn btn-info btn-xs">
+									<a href="/ministry?action=remove_ministry&id=<?php echo $ministry['_id']->{'$id'}; ?>" class="remove-ministry btn btn-info btn-xs">
 										<i class="fa fa-times-circle"></i>&nbsp; Remove
 									</a>
 								</td>
 							</tr>
 						<?php endforeach ?>
 					<?php else: ?>
-						<tr><td colspan="5">No Ministry yet.</td></tr>
+						<tr><td colspan="6">No Ministry yet.</td></tr>
 					<?php endif ?>
 				</tbody>
 			</table>

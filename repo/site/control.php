@@ -2,6 +2,10 @@
 /*
  * This file is part a custom application package.
  */
+
+// fix for display errors
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
  
 require_once dirname(__FILE__).'/eden.php';
 
@@ -96,6 +100,10 @@ class Control extends Eden {
 					break;
 				case 'sqlite':
 					$database = Eden_Sqlite::i($info['file']);
+					break;
+				case 'mongo':
+					$mongo = new MongoClient();
+					$database = $mongo->selectDB($info['name']);
 					break;
 			}
 			

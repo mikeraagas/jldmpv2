@@ -65,7 +65,7 @@
 						<?php if (!empty($events)): ?>
 							<?php foreach ($events as $event): ?>
 								<tr>
-									<td><?php echo $event['event_id']; ?></td>
+									<td><?php echo $event['_id']->{'$id'}; ?></td>
 									<td>
 										<div class="thumbnail">
 											<?php if (!empty($event['event_image'])): ?>
@@ -86,13 +86,13 @@
 										
 										<div class="pull-right">
 											<span class="badge alert-<?php echo $badge; ?>"><strong><?php echo $active; ?></strong></span> |
-											<a href="/event/view/<?php echo $event['event_id']; ?>" class="event-action-btn">
+											<a href="/event/view/<?php echo $event['_id']->{'$id'}; ?>" class="event-action-btn">
 												<i class="fa fa-share"></i>&nbsp; View
 											</a> |
-											<a href="/event/edit/<?php echo $event['event_id']; ?>" class="event-action-btn">
+											<a href="/event/edit/<?php echo $event['_id']->{'$id'}; ?>" class="event-action-btn">
 												<i class="fa fa-pencil-square"></i>&nbsp; Edit
 											</a> |
-											<a href="/events?action=remove_event&id=<?php echo $event['event_id']; ?>"
+											<a href="/events?action=remove_event&id=<?php echo $event['_id']->{'$id'}; ?>"
 											class="event-action-btn remove-event">
 												<i class="fa fa-times-circle"></i>&nbsp; Remove
 											</a>
@@ -101,7 +101,7 @@
 									<td><?php echo $event['event_type'] == 'ministry' ? $event['event_type'] : 'general'; ?></td>
 									<td><?php echo date('F j, Y', $event['event_start']); ?></td>
 									<td><?php echo date('F j, Y', $event['event_end']); ?></td>
-									<td><?php echo date('Y-m-d', $event['event_updated']); ?></td>
+									<td><?php echo date('Y-m-d', $event['event_updated']->sec); ?></td>
 								</tr>
 							<?php endforeach ?>
 						<?php else: ?>

@@ -1,8 +1,15 @@
 <div class="view-ministry-container">
+	<ol class="breadcrumb">
+		<li><a href="/">Home</a></li>
+		<li><a href="/ministry">Ministry List</a></li>
+		<li class="active">Ministry Profile</li>
+	</ol>
+
 	<section class="page-header ministry-header clearfix">
 		<h2 class="pull-left"><?php echo $ministry['ministry_title']; ?></h2>
 		<a href="/ministry" class="btn btn-success pull-right"><i class="fa fa-th-list"></i>&nbsp; Back to Ministry List</a>
 	</section>
+	
 	<section class="view-ministry-main container">
 		<?php include(dirname(__FILE__).'/_menu.phtml'); ?>
 		
@@ -13,7 +20,13 @@
 			<div class="panel-body">
 				<div class="row">
 					<div class="col-md-4">
-						<a href="#" class="thumbnail"><img src="/assets/images/placeholder.png" alt=""></a><br>
+						<?php if (isset($ministry['ministry_image']) && !empty($ministry['ministry_image'])): ?>
+							<a href="#" class="thumbnail"><img src="/uploads/ministry/<?php echo $ministry['ministry_image']['file_name']; ?>" alt=""></a>
+						<?php else: ?>
+							<a href="#" class="thumbnail"><img src="/assets/images/placeholder.png" alt=""></a>
+						<?php endif ?>
+						
+						<br>
 						<a href="#">Change logo</a>
 					</div>
 					<div class="col-md-8">

@@ -35,6 +35,7 @@
 					<div class="col-md-12">
 						<h3><?php echo $event['event_title']; ?></h3><br>
 						<p><?php echo $event['event_text']; ?></p>
+						<p><?php echo date('F j, Y', $event['event_start']); ?> - <?php echo date('F j, Y', $event['event_end']); ?></p>
 					</div>
 				</div>
 			</div>

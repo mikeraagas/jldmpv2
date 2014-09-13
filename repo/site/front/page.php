@@ -25,6 +25,10 @@ abstract class Front_Page extends Eden_Class {
 	protected $_title 		= NULL;
 	protected $_class 		= NULL;
 	protected $_template 	= NULL;
+
+	protected $_db          = null;
+	protected $_request     = null;
+	protected $_collection  = null;
 	
 	/* Private Properties
 	-------------------------------*/
@@ -32,6 +36,14 @@ abstract class Front_Page extends Eden_Class {
 	-------------------------------*/
 	/* Magic
 	-------------------------------*/
+	public function __construct() {
+		$this->_request = front()->registry()->get('request');
+		$this->_db 		= front()->getDatabase();
+
+		// set database collections
+		$this->_setCollections();
+	}
+
 	public function __toString() {
 		try {
 			$output = $this->render();
@@ -76,6 +88,15 @@ abstract class Front_Page extends Eden_Class {
 			'head'			=> $head,
 			'body'			=> $body,
 			'foot'			=> $foot));
+	}
+
+	protected function _setCollections() {
+		$this->_collection = array(
+			'ministry' => new MongoCollection($this->_db, 'ministry'),
+			'member'   => new MongoCollection($this->_db, 'member'),
+			'event'    => new MongoCollection($this->_db, 'event'),
+			'admin'    => new MongoCollection($this->_db, 'admin'),
+			'file'     => new MongoCollection($this->_db, 'file'));
 	}
 	
 	/* Private Methods

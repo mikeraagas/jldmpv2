@@ -1,4 +1,10 @@
 <div class="ministry-member-container">
+	<ol class="breadcrumb">
+		<li><a href="/">Home</a></li>
+		<li><a href="/ministry">Ministry List</a></li>
+		<li class="active">Members</li>
+	</ol>
+
 	<section class="page-header ministry-header clearfix">
 		<h2 class="pull-left">Members</h2>
 
@@ -9,6 +15,7 @@
 			</a>
 		</div>
 	</section>
+
 	<section class="ministry-member-main container">
 		<?php include(dirname(__FILE__).'/_menu.phtml'); ?>
 		
@@ -77,7 +84,7 @@
 						<?php if (!empty($members)): ?>
 							<?php foreach ($members as $member): ?>
 								<tr>
-									<td><?php echo $member['member_id']; ?></td>
+									<td><?php echo $member['_id']->{'$id'}; ?></td>
 									<td>
 										<div class="thumbnail">
 											<?php if (!empty($member['member_image'])): ?>
@@ -102,15 +109,15 @@
 									</td>
 									<td><?php echo $member['member_type']; ?></td>
 									<td>
-										<a href="/ministry/<?php echo $ministry_id; ?>/member/view/<?php echo $member['member_id']; ?>" class="btn btn-info btn-xs">
+										<a href="/ministry/<?php echo $ministry_id; ?>/member/view/<?php echo $member['_id']->{'$id'}; ?>" class="btn btn-info btn-xs">
 											<i class="fa fa-share"></i>&nbsp; View
 										</a>
 
-										<a href="/ministry/<?php echo $ministry_id; ?>/member/edit/<?php echo $member['member_id']; ?>" class="btn btn-info btn-xs">
+										<a href="/ministry/<?php echo $ministry_id; ?>/member/edit/<?php echo $member['_id']->{'$id'}; ?>" class="btn btn-info btn-xs">
 											<i class="fa fa-pencil-square"></i>&nbsp; Edit
 										</a>
 
-										<a href="/ministry/<?php echo $ministry_id; ?>/members?action=deleteMember&id=<?php echo $member['member_id'] ?>"
+										<a href="/ministry/<?php echo $ministry_id; ?>/members?action=deleteMember&id=<?php echo $member['_id']->{'$id'} ?>"
 										class="btn btn-info btn-xs remove-member">
 											<i class="fa fa-times-circle"></i>&nbsp; Remove
 										</a>

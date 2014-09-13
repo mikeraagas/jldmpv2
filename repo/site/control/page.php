@@ -47,6 +47,13 @@ abstract class Control_Page extends Eden_Class {
     protected $_fileTmpPaths = array();
     protected $_fileSizes	 = array();
     protected $_fileErrors 	 = array();
+
+    // table collections
+    protected $_collection = array();
+    protected $_dbMinistry = null;
+    protected $_dbAdmin    = null;
+    protected $_dbMember   = null;
+    protected $_dbFile     = null;
 	
 	/* Private Properties
 	-------------------------------*/
@@ -56,7 +63,10 @@ abstract class Control_Page extends Eden_Class {
 	-------------------------------*/
 	public function __construct() {
 		$this->_request = control()->registry()->get('request');
-		$this->_db = control()->getDatabase();
+		$this->_db 		= control()->getDatabase();
+
+		// set database collections
+		$this->_setCollections();
 	}
 
 	public function __toString() {
@@ -176,6 +186,20 @@ abstract class Control_Page extends Eden_Class {
 		}
 
 		return true;
+	}
+
+	protected function _setCollections() {
+		$this->_collection = array(
+			'ministry' => new MongoCollection($this->_db, 'ministry'),
+			'member'   => new MongoCollection($this->_db, 'member'),
+			'event'    => new MongoCollection($this->_db, 'event'),
+			'admin'    => new MongoCollection($this->_db, 'admin'),
+			'file'     => new MongoCollection($this->_db, 'file'));
+
+		$this->_dbMinistry = new MongoCollection($this->_db, 'ministry');
+		$this->_dbMember   = new MongoCollection($this->_db, 'member');
+		$this->_dbAdmin    = new MongoCollection($this->_db, 'admin');
+		$this->_dbFile     = new MongoCollection($this->_db, 'file');
 	}
 
 	/* Private Methods

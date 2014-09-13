@@ -6,15 +6,16 @@
 /**
  * Default logic to output a page
  */
-class Control_Page_Logout extends Control_Page {
+class Front_Page_About extends Front_Page {
 	/* Constants
 	-------------------------------*/
 	/* Public Properties
 	-------------------------------*/
 	/* Protected Properties
 	-------------------------------*/
-	protected $_title    = 'JLDMP - Control';
-	protected $_class    = 'logout';
+	protected $_title    = 'JLDMP - About';
+	protected $_class    = 'about';
+	protected $_template = '/about.phtml';
 	
 	/* Private Properties
 	-------------------------------*/
@@ -23,10 +24,6 @@ class Control_Page_Logout extends Control_Page {
 	/* Public Methods
 	-------------------------------*/
 	public function render() {
-		unset($_SESSION['admin']);
-		header('Location: /login');
-		exit;		
-
 		return $this->_page();
 	}
 	

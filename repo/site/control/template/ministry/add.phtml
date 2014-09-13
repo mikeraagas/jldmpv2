@@ -45,7 +45,7 @@
 
 						    <?php if (isset($_SESSION['ministry_tmpimages']) && !empty($_SESSION['ministry_tmpimages'])): ?>
 						    	<?php foreach ($_SESSION['ministry_tmpimages'] as $key => $image): ?>
-								    <a href="/ministry/add?action=remove_upload&id=<?php echo $image['file_id']; ?>"
+								    <a href="/ministry/add?action=remove_upload&id=<?php echo $image['_id']; ?>"
 								    class="remove-image-btn btn btn-danger btn-sm">
 										<i class="fa fa-times-circle"></i>&nbsp; Remove Image
 								    </a>

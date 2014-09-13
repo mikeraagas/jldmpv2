@@ -44,9 +44,6 @@ class Control_Page_Ministry_Events extends Control_Page {
 		$events = $this->_getEvents();
 		$events = $this->_getEventImages($events);
 
-		// control()->output($events);
-		// exit;
-
 		$this->_renderMsg();
 
 		$this->_body = array(
@@ -68,89 +65,76 @@ class Control_Page_Ministry_Events extends Control_Page {
 		$start 	= ($pg-1) * self::RANGE;
 		$filter = $this->_setFilter();
 
-		$q = $this->_db->search()
-			->setTable('event')
-			->setColumns('*')
-			->addFilter('event_ministry = '.$this->_ministry);
+		$query = $this->_collection['event']->find($filter)
+			->skip($start)
+			->limit(self::RANGE)
+			->sort(array('ministry_updated' => -1));
 
-		if ($filter != '') { $q = $q->addFilter($filter); }
-
-		$events = $q->addSort('event_updated', 'DESC')
-			->setStart($start)
-			->setRange(self::RANGE)
-			->getRows();
-
+		$events = iterator_to_array($query);
 		return $events;
 	}
 
 	protected function _getEventImages($events) {
 		foreach ($events as $key => $event) {
-			$images = $this->_db->search()
-				->setTable('file')
-				->setColumns('*')
-				->addFilter('file_parent = '.$event['event_id'].' AND file_active = 1 AND file_primary = 1 AND file_type = "event"')
-				->getRow();
+			$filter = array(
+				'file_parent'  => $event['_id']->{'$id'},
+				'file_active'  => 1,
+				'file_primary' => 1,
+				'file_type'    => 'event');
 
-			$events[$key]['event_image'] = $images;
+			$image = $this->_collection['file']->findOne($filter);
+			$events[$key]['event_image'] = $image;
 		}
 
 		return $events;
 	}
 
 	protected function _setFilter() {
-		$filter = '';
+		$filter = array('event_active' => 1);
 
 		switch ($this->_var) {
-			case 'active':		$filter = 'event_active = 1'; break;
-			case 'not-active':	$filter = 'event_active = 0'; break;
+			case 'active':		$filter['event_active'] = 1; break;
+			case 'not-active':	$filter['event_active'] = 0; break;
 		}
 
-		if ($filter != '' && isset($_GET['q'])) { $filter .= ' AND '; }
-		if (isset($_GET['q'])) { $filter .= 'event_title like "%'.$_GET['q'].'%"'; }
-		
+		if (isset($_GET['q'])) { $filter['event_title'] = $_GET['q']; }		
 		return $filter;
 	}
 
 	protected function _countEvents() {
 		$filter = $this->_setFilter();
+		$query  = $this->_collection['event']->find($filter);
+		$count  = $query->count();
 
-		$q = $this->_db->search()
-			->setTable('event')
-			->setColumns('count(*) as c')
-			->addFilter('event_ministry = '.$this->_ministry);
-
-		if ($filter != '') { $this->_setFilter(); }
-
-		$count = $q->getRow();
-
-		return $count['c']; 
+		return $count; 
 	}
 
 	protected function _removeEvent($id) {
 		$this->_eventPath = dirname(__FILE__).'/../../../../../uploads/event/';
 
 		// remove images
-		$images = $this->_db->search()
-			->setTable('file')
-			->setColumns('*')
-			->addFilter('file_parent = '.$id.' AND file_active = 1 AND file_type = "event"')
-			->getRows();
+		$filter = array(
+			'file_parent' => $id,
+			'file_active' => 1,
+			'file_type'   => 'event');
+
+		$images = $this->_collection['file']->find($filter);
 
 		if (!empty($images)) {
 			foreach ($images as $image) {
 				unlink($this->_eventPath.$image['file_name']);
 			}
 
-			$imagesFilter[] = array('file_parent=%s', $id);
-			$imagesFilter[] = array('file_active=%s', 1);
-			$imagesFilter[] = array('file_type=%s', 'event');
+			$imageFilter = array(
+				'file_parent' => $id,
+				'file_active' => 1,
+				'file_type'   => 'event');
 
-			$this->_db->deleteRows('file', $imagesFilter);
+			$this->_collection['file']->remove($imageFilter, array('justOne' => false));
 		}
 
-		// delete event
-		$filter[] = array('event_id=%s', $id);
-		$this->_db->deleteRows('event', $filter);
+		$eventFilter = array('_id' => new MongoId($id));
+		$this->_collection['event']->remove($eventFilter, array('justOne' => true));
 
 		header('Location: /ministry/'.$this->_ministry.'/events');
 		exit;

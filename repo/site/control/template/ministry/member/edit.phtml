@@ -1,8 +1,16 @@
 <div class="ministry-member-add-container">
+	<ol class="breadcrumb">
+		<li><a href="/">Home</a></li>
+		<li><a href="/ministry">Ministry List</a></li>
+		<li><a href="/ministry/<?php echo $ministry_id; ?>/members">Members</a></li>
+		<li class="active">Edit</li>
+	</ol>
+
 	<section class="page-header ministry-header clearfix">
 		<h2 class="pull-left">Edit Member</h2>
 		<a href="/ministry/<?php echo $ministry_id; ?>/members" class="btn btn-success pull-right"><i class="fa fa-th-list"></i>&nbsp; Back to Member List</a>
 	</section>
+	
 	<section class="ministry-member-main container">
 		<?php include(dirname(__FILE__).'/../_menu.phtml'); ?>
 
@@ -40,7 +48,7 @@
 						    <input type="submit" class="btn btn-primary btn-sm" value="Update Profile Picture" id="upload"/>
 						    
 						    <?php if (!empty($post['member_image'])): ?>
-							    <a href="/ministry/<?php echo $ministry_id; ?>/member/edit/<?php echo $post['member_id']; ?>?action=remove_image&id=<?php echo $post['member_image']['file_id']; ?>"
+							    <a href="/ministry/<?php echo $ministry_id; ?>/member/edit/<?php echo $post['_id']->{'$id'}; ?>?action=remove_image&id=<?php echo $post['member_image']['_id']->{'$id'}; ?>"
 							    class="remove-image-btn btn btn-danger btn-sm">
 									<i class="fa fa-times-circle"></i>&nbsp; Remove Image
 							    </a>

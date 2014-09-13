@@ -25,7 +25,7 @@ class Control_Page_Ministry_Add extends Control_Page {
 	
 	protected $_msg      	= array();
 	protected $_errors    	= array();
-	protected $_minstryPath = null;
+	protected $_ministryPath = null;
 	
 	/* Private Properties
 	-------------------------------*/
@@ -33,8 +33,8 @@ class Control_Page_Ministry_Add extends Control_Page {
 	-------------------------------*/
 	/* Public Methods
 	-------------------------------*/
-	public function render() {
-		$this->_minstryPath = dirname(__FILE__).'/../../../../../uploads/ministry/';
+	public function render() {		
+		$this->_ministryPath = dirname(__FILE__).'/../../../../../uploads/ministry/';
 
 		if (isset($_POST['add_ministry'])) {
 			if ($this->_setErrors($_POST)) {
@@ -82,63 +82,54 @@ class Control_Page_Ministry_Add extends Control_Page {
 
 	protected function _checkExists($title) {
 		// check if exists
-		$exists = $this->_db->search()
-			->setTable('ministry')
-			->setColumns('*')
-			->filterByMinistryTitle($title)
-			->getRow();
+		$filter = array('ministry_title' => $title);
+		$exists = $this->_collection['admin']->findOne($filter);
 
-		if (!empty($exists)) {
-			return true;
-		}
-
+		if (!empty($exists)) { return true; }
 		return false;
 	}
 
 	protected function _addMinistry($post) {
 		// add admin
-		$settings = array(
+		$adminSettings = array(
 			'admin_name' 	 => $post['name'],
 			'admin_email'    => $post['email'],
 			'admin_username' => $post['username'],
 			'admin_password' => md5($post['password']),
 			'admin_active'   => 1,
 			'admin_type'     => 2,
-			'admin_created'  => time(),
-			'admin_updated'  => time());
+			'admin_created'  => new MongoDate(),
+			'admin_updated'  => new MongoDate());
 
-		$this->_db->insertRow('admin', $settings);
-		$ministryId = $this->_db->getLastInsertedId();
+		$this->_collection['admin']->insert($adminSettings);
+		$ministryId = $adminSettings['_id']->{'$id'};
 
 		// add ministry
-		$settings = array(
+		$ministrySettings = array(
 			'ministry_admin' 		=> $ministryId,
 			'ministry_title' 		=> $post['title'],
 			'ministry_description' 	=> $post['description'],
 			'ministry_active' 		=> $post['active'],
-			'ministry_created' 		=> time(),
-			'ministry_updated' 		=> time());
+			'ministry_created' 		=> new MongoDate(),
+			'ministry_updated' 		=> new MongoDate());
 
-		$this->_db->insertRow('ministry', $settings);
+		$this->_collection['ministry']->insert($ministrySettings);
 
 		// set member images
 		if (isset($_SESSION['ministry_tmpimages']) && !empty($_SESSION['ministry_tmpimages'])) {
 			$images = $_SESSION['ministry_tmpimages'];
 
 			foreach ($images as $key => $image) {
-				$file = $this->_db->search()
-					->setTable('file')
-					->setColumns('*')
-					->filterByFileId($image['file_id'])
-					->getRow();
+				$filter = array('_id' => new MongoId($image['_id']->{'$id'}));
+				$file   = $this->_collection['file']->findOne($filter);
 
 				if (empty($file)) continue;
 
 				$settings = array(
-					'file_parent' => $ministryId,
+					'file_parent' => $ministrySettings['_id']->{'$id'},
 					'file_active' => 1);
 
-				$this->_updateDbImage($file['file_id'], $settings);
+				$this->_updateDbImage($file['_id']->{'$id'}, $settings);
 			}
 
 			unset($_SESSION['ministry_tmpimages']);
@@ -153,16 +144,17 @@ class Control_Page_Ministry_Add extends Control_Page {
 	}
 
 	protected function _updateDbImage($id, $settings) {
-		$filter[] = array('file_id=%s', $id);
+		$filter       = array('_id' => new MongoId($id));
+		$fileSettings = array('$set' => $settings);
 
-		$this->_db->updateRows('file', $settings, $filter);
+		$this->_collection['file']->update($filter, $fileSettings);
 		return;
 	}
 
 	protected function _uploadMinistryImage() {
 		foreach ($this->_fileTmpPaths as $key => $fileTmpPath) {
 			// move uploaded file
-			if (move_uploaded_file($fileTmpPath, $this->_minstryPath.$this->_fileNames[$key])) {
+			if (move_uploaded_file($fileTmpPath, $this->_ministryPath.$this->_fileNames[$key])) {
 				// base64_encode image
 				$extension = explode('.', $this->_fileNames[$key]);
 				$extension = end($extension);
@@ -171,24 +163,25 @@ class Control_Page_Ministry_Add extends Control_Page {
 				$filename  	= md5($rand);
 				$filename  	= $filename.'.'.$extension;
 
-				rename($this->_minstryPath.$this->_fileNames[$key], $this->_minstryPath.$filename);
+				rename($this->_ministryPath.$this->_fileNames[$key], $this->_ministryPath.$filename);
 
 				// check if image already exists
-				$exists = $this->_db->search()
-					->setTable('file')
-					->setColumns('*')
-					->addFilter('file_name = "'.$_SESSION['ministry_tmpimages'][0]['file_name'].'" AND file_active = 0 AND file_type = "ministry"')
-					->getRow();
+				$existFilter = array(
+					'file_name'   => $_SESSION['ministry_tmpimages'][0]['file_name'],
+					'file_active' => 0,
+					'file_type'   => 'ministry');
+
+				$exists = $this->_collection['file']->findOne($existFilter);
 
 				// if image exists update file and database
 				if (!empty($exists)) {
-					unlink($this->_minstryPath.$_SESSION['ministry_tmpimages'][0]['file_name']);
+					unlink($this->_ministryPath.$_SESSION['ministry_tmpimages'][0]['file_name']);
 
 					// update datebase file name
-					$settings = array('file_name' => $filename);
-					$filter[] = array('file_id=%s', $exists['file_id']);
+					$settings = array('$set' => array('file_name' => $filename));
+					$filter   = array('file_id' => $exists['file_id']);
 
-					$this->_db->updateRows('file', $settings, $filter);
+					$this->_collection['file']->update($filter, $settings);
 
 					$_SESSION['ministry_tmpimages'][0]['file_name'] = $filename;
 					unset($fileTmpPath);
@@ -201,27 +194,21 @@ class Control_Page_Ministry_Add extends Control_Page {
 					exit;
 				}
 
-				$settings = array(
+				$fileSettings = array(
 					'file_name' 	 => $filename,
 					'file_extension' => $this->_fileTypes[$key],
 					'file_type'		 => 'ministry',
 					'file_active'	 => 0,
 					'file_primary'	 => 1,
-					'file_created'	 => time(),
-					'file_updated'	 => time());
+					'file_created'	 => new MongoDate(),
+					'file_updated'	 => new MongoDate());
 
-				$this->_db->insertRow('file', $settings);
-				$fileId = $this->_db->getLastInsertedId();
-
-				$file = $this->_db->search()
-					->setTable('file')
-					->setColumns('*')
-					->filterByFileId($fileId)
-					->getRow();
-
+				$this->_collection['file']->insert($fileSettings);
+				$fileId = $fileSettings['_id']->{'$id'};
+				
 				if (!isset($_SESSION['ministry_tmpimages'])) { $_SESSION['ministry_tmpimages'] = array(); }
 
-				$_SESSION['ministry_tmpimages'][] = $file;
+				$_SESSION['ministry_tmpimages'][] = $fileSettings;
 				continue;
 			}
 
@@ -249,12 +236,12 @@ class Control_Page_Ministry_Add extends Control_Page {
 		$uploaded = $_SESSION['ministry_tmpimages'];
 
 		foreach ($uploaded as $key => $image) {
-			if ($image['file_id'] == $id) {
-				unlink($this->_minstryPath.$_SESSION['ministry_tmpimages'][$key]['file_name']);
+			if ($image['_id']->{'$id'} == $id) {
+				unlink($this->_ministryPath.$_SESSION['ministry_tmpimages'][$key]['file_name']);
 				unset($_SESSION['ministry_tmpimages'][$key]);
 
-				$filter[] = array('file_id=%s', $id);
-				$this->_db->deleteRows('file', $filter);
+				$filter = array('_id' => new MongoId($id));
+				$this->_collection['file']->remove($filter, array('justOne' => true));
 
 				$_SESSION['msg'][] = array(
 					'type' 	=> 'success',

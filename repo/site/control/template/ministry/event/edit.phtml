@@ -28,8 +28,8 @@
 											<div class="image-thumbnail">
 												<img src="/uploads/event/<?php echo $image['file_name']; ?>">
 											</div>
-											<a href="/ministry/<?php echo $ministry_id; ?>/event/edit/<?php echo $post['event_id']; ?>?action=remove_image&id=<?php echo $image['file_id']; ?>" 
-											class="upload-actions remove-event-image" data-ids="<?php echo $image['file_id']; ?>">
+											<a href="/ministry/<?php echo $ministry_id; ?>/event/edit/<?php echo $post['_id']->{'$id'}; ?>?action=remove_image&id=<?php echo $image['_id']->{'$id'}; ?>" 
+											class="upload-actions remove-event-image" data-ids="<?php echo $image['_id']->{'$id'}; ?>">
 												<i class="fa fa-times-circle fa-5x"></i>
 											</a>
 											<?php if ($image['file_primary'] == 1): ?>
@@ -38,8 +38,8 @@
 													<i class="fa fa-star"></i>
 												</span>
 											<?php else: ?>
-												<a href="/ministry/<?php echo $ministry_id; ?>/event/edit/<?php echo $post['event_id']; ?>?action=set_primary&id=<?php echo $image['file_id']; ?>"
-												class="primary-label upload-not-primary set-primary" data-id="<?php echo $image['file_id']; ?>">Set as Primary</a>
+												<a href="/ministry/<?php echo $ministry_id; ?>/event/edit/<?php echo $post['_id']->{'$id'}; ?>?action=set_primary&id=<?php echo $image['_id']->{'$id'}; ?>"
+												class="primary-label upload-not-primary set-primary" data-id="<?php echo $image['_id']->{'$id'}; ?>">Set as Primary</a>
 											<?php endif ?>
 										</div>
 									<?php endforeach; ?>

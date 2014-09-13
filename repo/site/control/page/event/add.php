@@ -85,31 +85,31 @@ class Control_Page_Event_Add extends Control_Page {
 			'event_type'		=> 'general',
 			'event_start'		=> strtotime($post['event_start']),
 			'event_end'			=> strtotime($post['event_end']),
-			'event_active'		=> $post['event_active'],
-			'event_created'		=> time(),
-			'event_updated'		=> time());
+			'event_active'		=> (int) $post['event_active'],
+			'event_created'		=> new MongoDate(),
+			'event_updated'		=> new MongoDate());
 
-		$this->_db->insertRow('event', $settings);
-		$fileId = $this->_db->getLastInsertedId();
+		$this->_collection['event']->insert($settings);
+		$eventId = $settings['_id']->{'$id'};
 
 		// set event images
 		if (isset($_SESSION['event_tmpimages']) && !empty($_SESSION['event_tmpimages'])) {
 			$images = $_SESSION['event_tmpimages'];
 
 			foreach ($images as $image) {
-				$file = $this->_db->search()
-					->setTable('file')
-					->setColumns('*')
-					->filterByFileId($image['file_id'])
-					->getRow();
+				$fileId = $image['_id']->{'$id'};
 
-				if (empty($file)) continue;
+				$existsFilter = array('_id' => new MongoId($fileId));
+				$exists = $this->_collection['file']->findOne($existsFilter);
+
+				if (empty($exists)) continue;
 
 				$settings = array(
-					'file_parent' => $fileId,
+					'file_parent' => $eventId,
 					'file_active' => 1);
 
-				$this->_updateDbImage($file['file_id'], $settings);
+				$filter = array('_id' => new MongoId($fileId));
+				$this->_collection['file']->update($filter, array('$set' => $settings));
 			}
 
 			unset($_SESSION['event_tmpimages']);
@@ -137,30 +137,24 @@ class Control_Page_Event_Add extends Control_Page {
 
 				rename($this->_eventPath.$this->_fileNames[$key], $this->_eventPath.$filename);
 
-				$settings = array(
+				$fileSettings = array(
 					'file_name' 	 => $filename,
 					'file_extension' => $this->_fileTypes[$key],
 					'file_type'		 => 'event',
 					'file_active'	 => 0,
-					'file_created'	 => time(),
-					'file_updated'	 => time());
+					'file_primary'   => 0,
+					'file_created'	 => new MongoDate(),
+					'file_updated'	 => new MongoDate());
 
 				// check primary is already set
 				$primarySet = $this->_checkIfPrimary();
-				if (!$primarySet) { $settings['file_primary'] = 1; }
+				if (!$primarySet) { $fileSettings['file_primary'] = 1; }
 
-				$this->_db->insertRow('file', $settings);
-				$fileId = $this->_db->getLastInsertedId();
-
-				$file = $this->_db->search()
-					->setTable('file')
-					->setColumns('*')
-					->filterByFileId($fileId)
-					->getRow();
+				$this->_collection['file']->insert($fileSettings);
 
 				if (!isset($_SESSION['event_tmpimages'])) { $_SESSION['event_tmpimages'] = array(); }
+				$_SESSION['event_tmpimages'][] = $fileSettings;
 
-				$_SESSION['event_tmpimages'][] = $file;
 				continue;
 			}
 
@@ -188,12 +182,12 @@ class Control_Page_Event_Add extends Control_Page {
 		$uploaded = $_SESSION['event_tmpimages'];
 
 		foreach ($uploaded as $key => $image) {
-			if ($image['file_id'] == $id) {
+			if ($image['_id']->{'$id'} == $id) {
 				unlink($this->_eventPath.$_SESSION['event_tmpimages'][$key]['file_name']);
 				unset($_SESSION['event_tmpimages'][$key]);
 
-				$filter[] = array('file_id=%s', $id);
-				$this->_db->deleteRows('file', $filter);
+				$filter = array('_id' => new MongoId($id));
+				$this->_collection['file']->remove($filter, array('justOne' => true));
 
 				$_SESSION['msg'][] = array(
 					'type' 	=> 'success',
@@ -216,21 +210,26 @@ class Control_Page_Event_Add extends Control_Page {
 
 	protected function _setAsPrimary($key) {
 		if (isset($_SESSION['event_tmpimages'])) {
+			// set other uploaded files to not primary
 			foreach ($_SESSION['event_tmpimages'] as $k => $image) {
 				if ($image['file_primary'] == 1) {
 					$_SESSION['event_tmpimages'][$k]['file_primary'] = 0;
 
 					$settings = array('file_primary' => 0);
-					$filter[] = array('file_id=%s', $image['file_id']);
+					$filter   = array('_id' => $image['_id']->{'$id'});
 
-					$this->_db->updateRows('file', $settings, $filter);
+					$this->_collection['file']->update($filter, array('$set' => $settings));
 				}
 			}
 
+			// update selected file to primary
 			$_SESSION['event_tmpimages'][$key]['file_primary'] = 1;
 
-			$settings = array('file_primary' => 1);
-			$this->_updateDbImage($_SESSION['event_tmpimages'][$key]['file_id'], $settings);
+			$id = $_SESSION['event_tmpimages'][$key]['_id']->{'$id'};
+			$primarySettings = array('file_primary' => 1);
+			$primaryFilter   = array('_id' => $id);
+
+			$this->_collection['file']->update($primaryFilter, $primarySettings);
 
 			$_SESSION['msg'][] = array(
 				'type' => 'success',
