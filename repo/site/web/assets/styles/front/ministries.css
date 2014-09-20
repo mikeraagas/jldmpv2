@@ -9,3 +9,11 @@
 }
 .ministry-list .ministry-template:first-child { margin-left: 0; }
 .ministry-list .ministry-template:last-child { margin-right: 0; }
+.ministry-list .ministry-template .image { margin-bottom: 10px; }
+.ministry-list .ministry-template .image img { width: 100%; }
+.ministry-list .ministry-template .description .title {
+	font-family: 'Montserrat' sans-serif;
+	font-weight: 500;
+	font-size: 15px;
+	margin: 20px 0;
+}

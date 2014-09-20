@@ -69,10 +69,10 @@ input[type="text"], input[type="email"], input[type="password"], select, button 
 	font-weight: bold;
 	margin: 0;
 	font-size: 30px;
-	-webkit-transition: font-size 0.2s;
-       -moz-transition: font-size 0.2s;
-         -o-transition: font-size 0.2s;
-            transition: font-size 0.2s;
+	-webkit-transition: font-size 0.4s;
+       -moz-transition: font-size 0.4s;
+         -o-transition: font-size 0.4s;
+            transition: font-size 0.4s;
 }
 .bottom-header .first-column .header-logo h1 a { color: #333; text-decoration: none; }
 .bottom-header .first-column .header-logo p { margin: 0; }
