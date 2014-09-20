@@ -1,0 +1,11 @@
+
+.ministry-list { margin: 40px 0; }
+.ministry-list .ministry-template {
+	margin: 0 20px;
+	float: left;
+	min-height: 200px;
+	text-align: center;
+	width: 245px;
+}
+.ministry-list .ministry-template:first-child { margin-left: 0; }
+.ministry-list .ministry-template:last-child { margin-right: 0; }
