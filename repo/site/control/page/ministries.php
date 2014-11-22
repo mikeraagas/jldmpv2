@@ -6,7 +6,7 @@
 /**
  * Default logic to output a page
  */
-class Control_Page_Ministry extends Control_Page {
+class Control_Page_Ministries extends Control_Page {
 	/* Constants
 	-------------------------------*/
 	const RANGE = 10;
@@ -17,7 +17,7 @@ class Control_Page_Ministry extends Control_Page {
 	-------------------------------*/
 	protected $_title    = 'JLDMP - Control';
 	protected $_class    = 'ministry';
-	protected $_template = '/ministry.phtml';
+	protected $_template = '/ministries.phtml';
 	protected $_msg      = array();
 	
 	/* Private Properties
@@ -27,19 +27,32 @@ class Control_Page_Ministry extends Control_Page {
 	/* Public Methods
 	-------------------------------*/
 	public function render() {
-		$ministries = $this->_getMinistries();
-		$ministries = $this->_getMinistryImage($ministries);
-		
+		$this->_var = isset($this->_request['variables'][0]) ? $this->_request['variables'][0] : null;
+
 		if (isset($_GET['action']) && $_GET['action'] == 'remove_ministry') {
-			if (!isset($_GET['id'])) { header('Location: /ministry'); exit; }
+			if (!isset($_GET['id'])) { header('Location: /ministries'); exit; }
 			$this->_removeMinistry($_GET['id']);
 		}
+
+		$ministries = $this->_getMinistries();
+		$ministries = $this->_getMinistryImage($ministries);
+
+		// set pagination
+		$pg    = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
+		$count = $this->_countMinistries();
+		$pages = ceil($count/self::RANGE);
+
+		// control()->output($ministries);
+		// exit;
 
 		$this->_renderMsg();
 
 		$this->_body = array(
+			'var'        => $this->_var,
 			'ministries' => $ministries,
-			'msgs' 		 => $this->_msg);
+			'msgs' 		 => $this->_msg,
+			'pg'         => $pg,
+			'pages'      => $pages);
 
 		return $this->_page();
 	}
@@ -47,13 +60,20 @@ class Control_Page_Ministry extends Control_Page {
 	/* Protected Methods
 	-------------------------------*/
 	protected function _getMinistries() {
-		$q = $this->_dbMinistry->find();
-		$q = $q->sort(array('ministry_updated' => -1));
-		$ministries = iterator_to_array($q);
+		$pg 	= isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
+		$start 	= ($pg-1) * self::RANGE;
+		$filter = $this->_setFilter();
+
+		$query = $this->_collection['ministry']->find($filter)
+			->skip($start)
+			->limit(self::RANGE)
+			->sort(array('ministry_updated' => -1));
+
+		$ministries = iterator_to_array($query);
 
 		foreach ($ministries as $key => $value) {
 			$filter = array('_id' => new MongoId($value['ministry_admin']));
-			$admin  = $this->_dbAdmin->findOne($filter);
+			$admin  = $this->_collection['admin']->findOne($filter);
 
 			$ministries[$key]['admin'] = $admin;
 		}
@@ -74,6 +94,27 @@ class Control_Page_Ministry extends Control_Page {
 		}
 
 		return $ministries;
+	}
+
+	protected function _countMinistries() {
+		$filter = $this->_setFilter();
+		$query  = $this->_collection['ministry']->find($filter);
+		$count  = $query->count();
+
+		return $count;
+	}
+
+	protected function _setFilter() {
+		$filter = array();
+
+		switch ($this->_var) {
+			case 'active':		$filter['ministry_active'] = 1; break;
+			case 'not-active':	$filter['ministry_active'] = 0; break;
+		}
+
+		if (isset($_GET['q'])) { $filter['member_title'] = array('$regex' => $_GET['q']); }
+		
+		return $filter;
 	}
 
 	protected function _removeMinistry($id) {
@@ -114,7 +155,7 @@ class Control_Page_Ministry extends Control_Page {
 			'type' => 'success',
 			'msg'  => 'Successfully removed ministry!');
 
-		header('Location: /ministry');
+		header('Location: /ministries');
 		exit;
 	}
 

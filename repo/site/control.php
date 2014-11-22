@@ -2,10 +2,6 @@
 /*
  * This file is part a custom application package.
  */
-
-// fix for display errors
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
  
 require_once dirname(__FILE__).'/eden.php';
 
@@ -181,7 +177,9 @@ class Control extends Eden {
 		$this->registry()
 			->set('path', 'root', 		$this->_root)
 			->set('path', 'module', 	$this->_root.'/module')
+			->set('path', 'lib', 	    $this->_root.'/lib')
 			->set('path', 'config', 	$this->_root.'/../../config')
+			->set('path', 'uploads', 	$this->_root.'/../../uploads')
 			->set('path', 'theme', 		$this->_root.'/theme')
 			->set('path', 'page', 		$this->_root.'/control/page')
 			->set('path', 'template', 	$this->_root.'/control/template')
@@ -203,7 +201,7 @@ class Control extends Eden {
 		}
 		
 		$array 		= explode('/',  $path);
-		$pages 		= $this->config('pages');
+		$pages 		= $this->config('/control/pages');
 		$variables 	= array();
 		
 		$page = NULL;

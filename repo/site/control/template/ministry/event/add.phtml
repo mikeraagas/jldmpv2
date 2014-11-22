@@ -1,3 +1,10 @@
+<link rel="stylesheet" href="/assets/styles/cropper.css">
+<link rel="stylesheet" href="/assets/cropper-master/examples/crop-avatar/css/crop-avatar.css">
+
+<style type="text/css">
+	.add-event-main .alert-danger .icon { float: left; padding-right: 10px; }
+	.add-event-main .alert-danger .error-msgs { float: left; }
+</style>
 <div class="add-event-container container">
 	<section class="page-header ministry-header row">
 		<div class="col-md-12 clearfix">
@@ -7,136 +14,171 @@
 	</section>
 	<section class="add-event-main clearfix">
 		<?php include(dirname(__FILE__).'/../_menu.phtml'); ?>
-
-		<?php foreach ($errors as $error): ?>
-			<div class="alert alert-danger"><?php echo $error; ?></div>
-		<?php endforeach ?>
+		
+		<?php if (!empty($errors)): ?>
+			<div class="alert alert-danger clearfix">
+				<div class="icon">
+					<i class="fa fa-exclamation-circle fa-lg"></i>
+				</div>
+				<div class="error-msgs">
+					<?php foreach ($errors as $error): ?>
+						<span style="display: block; margin-bottom: 5px;"><?php echo $error; ?></span>
+					<?php endforeach ?>
+				</div>
+			</div>
+		<?php endif ?>
 
 		<?php include(dirname(__FILE__).'/../../_msg.phtml'); ?>
 
-		<div class="panel panel-default">
-			<div class="panel-heading"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Event Images</div>
-			<div class="panel-body">
-				<div class="row">
-					<div class="col-md-12 clearfix">
-				        <label for="event_images">Event Images</label>
-						<div class="event-uploaded-images row">
-							<div class="col-md-12 clearfix">
-								<?php if (isset($_SESSION['event_tmpimages'])): ?>
-									<?php foreach ($_SESSION['event_tmpimages'] as $key => $image): ?>
-										<div class="upload-image">
-											<div class="image-thumbnail">
-												<img src="/uploads/event/<?php echo $image['file_name']; ?>">
-											</div>
-											<a href="/ministry/<?php echo $ministry_id; ?>/event/add?action=remove_upload&id=<?php echo $image['_id']->{'$id'}; ?>" 
-											class="upload-actions remove-event-image" data-ids="<?php echo $image['_id']->{'$id'}; ?>">
-												<i class="fa fa-times-circle fa-5x"></i>
-											</a>
-											<?php if (isset($image['file_primary']) && $image['file_primary'] == 1): ?>
-												<span class="primary-label upload-primary">
-													Primary Event Image
-													<i class="fa fa-star"></i>
-												</span>
-											<?php else: ?>
-												<a href="/ministry/<?php echo $ministry_id; ?>/event/add?action=set_primary&key=<?php echo $key; ?>"
-												class="primary-label upload-not-primary set-primary" data-id="<?php echo $image['_id']->{'$id'}; ?>">Set as Primary</a>
-											<?php endif ?>
-										</div>
-									<?php endforeach ?>
-								<?php endif ?>
-							</div>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="panel panel-default">
+					<div class="panel-heading"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; News Images</div>
+					<div class="panel-body" id="crop-avatar">
+						<div class="event-image avatar-view" title="Upload Event Image">
+							<?php if (isset($_SESSION['event_tmpimage']) && !empty($_SESSION['event_tmpimage'])): ?>
+								<img src="/uploads/event/<?php echo $_SESSION['event_tmpimage']['file_name']; ?>">
+							<?php else: ?>
+								<img src="/assets/images/placeholder.png">
+							<?php endif ?>
+
+							<span class="btn btn-success btn-sm">
+								<i class="fa fa-image"></i>&nbsp; Upload News Photo
+							</span>
 						</div>
 
-						<form action="" method="post" enctype="multipart/form-data" id="event_images_form" class="event-images-form">
-							<div class="upload-input-container">
-								<div class="form-input">
-								    <input name="file[]" type="file" />
+						<div class="modal fade" id="avatar-modal" tabindex="-1" role="dialog" aria-labelledby="avatar-modal-label" aria-hidden="true">
+							<div class="modal-dialog modal-lg">
+								<div class="modal-content">
+									<form class="avatar-form" method="post" action="" enctype="multipart/form-data">
+										<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal">&times;</button>
+											<h4 class="modal-title" id="avatar-modal-label">Change Avatar</h4>
+										</div>
+										<div class="modal-body">
+											<div class="avatar-body">
+												<!-- Upload image and data -->
+												<div class="avatar-upload">
+													<input class="avatar-src" name="avatar_src" type="hidden">
+													<input class="avatar-data" name="avatar_data" type="hidden">
+													<label for="avatarInput">Local upload</label>
+													<input class="avatar-input" id="avatarInput" name="file" type="file">
+												</div>
+
+												<!-- Crop and preview -->
+												<div class="row">
+													<div class="col-md-9">
+														<div class="avatar-wrapper"></div>
+													</div>
+													<div class="col-md-3">
+														<div class="avatar-preview preview-lg"></div>
+														<div class="avatar-preview preview-md"></div>
+														<div class="avatar-preview preview-sm"></div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="modal-footer">
+											<button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+											<button class="btn btn-primary avatar-save" type="submit">Save</button>
+										</div>
+									</form>
 								</div>
 							</div>
-
-						    <button class="add-more btn btn-info btn-sm"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Add More Files</button>
-						    <input type="submit" class="btn btn-primary btn-sm" value="Upload File" id="upload"/>
-					    </form>
+						</div><!-- /.modal -->
 					</div>
 				</div>
 			</div>
-		</div>
-
-		<div class="panel panel-default">
-			<div class="panel-heading"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Event Information</div>
-			<div class="panel-body">
-				<form action="" method="post">
-					<div class="form-group">
-						<label for="event_title">Event Title</label>
-						<input type="text" name="event_title" id="event_title" class="form-control" placeholder="Title"
-						value="<?php echo isset($post['event_title']) ? $post['event_title'] : ''; ?>">
-					</div>
-					<div class="form-group">
-						<label for="event_text">Event Text</label>
-						<textarea name="event_text" id="event_text" class="form-control" cols="30" rows="10" placeholder="Description"><?php echo isset($post['event_text']) ? $post['event_text'] : ''; ?></textarea>
-					</div>
-
-					<div class="form-group event-date">
-						<div class="row">
-							<div class="col-md-3">
-								<label>Start Date</label>
-								<span class="input-group">
-									<input class="form-control" name="event_start" id="start-date-display" type="text" 
-									value="<?php echo isset($post['event_start']) ? $post['event_start'] : date('Y-m-d', time()); ?>" readonly>
-
-									<span class="input-group-btn">
-										<a href="#" id="date-start" class="btn btn-default" data-date-format="yyyy-mm-dd">
-											<i class="glyphicon glyphicon-th"></i>
-										</a>
-									</span>
-								</span>
+			<div class="col-md-9">
+				<div class="panel panel-default">
+					<div class="panel-heading"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Event Information</div>
+					<div class="panel-body">
+						<form action="" method="post">
+							<div class="form-group">
+								<label for="event_title">Event Title</label>
+								<input type="text" name="event_title" id="event_title" class="form-control" placeholder="Title"
+								value="<?php echo isset($post['event_title']) ? $post['event_title'] : ''; ?>">
 							</div>
-							<div class="col-md-3">
-								<label>End Date</label>
-								<div class="input-group">
-									<input class="form-control" name="event_end" id="end-date-display" type="text" 
-									value="<?php echo isset($post['event_end']) ? $post['event_end'] : date('Y-m-d', time()); ?>" readonly>
+							<div class="form-group">
+								<label for="event_text">Event Text</label>
+								<textarea name="event_text" id="event_text" class="form-control" cols="30" rows="10" placeholder="Description"><?php echo isset($post['event_text']) ? $post['event_text'] : ''; ?></textarea>
+							</div>
 
-									<span class="input-group-btn">
-										<a href="#" id="date-end" class="btn btn-default" data-date-format="yyyy-mm-dd">
-											<i class="glyphicon glyphicon-th"></i>
-										</a>
-									</span>
+							<div class="form-group event-date">
+								<div class="row">
+									<div class="col-md-3">
+										<label>Start Date</label>
+										<div class="input-group date" id="date-start">
+											<input class="form-control" name="event_start" id="start-date-display" type="text" data-date-format="YYYY-MM-DD hh:mm a"
+											value="<?php echo isset($post['event_start']) ? date('Y-m-d g:i a', $post['event_start']) : date('Y-m-d g:i a', time()); ?>" readonly>
+
+											<span class="input-group-btn">
+												<a href="#" class="btn btn-default">
+													<i class="glyphicon glyphicon-th"></i>
+												</a>
+											</span>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<label>End Date</label>
+										<div class="input-group" id="date-end">
+											<input class="form-control" name="event_end" id="end-date-display" type="text" data-date-format="YYYY-MM-DD hh:mm a" 
+											value="<?php echo isset($post['event_end']) ? date('Y-m-d g:i a', $post['event_end']) : date('Y-m-d g:i a', time()); ?>" readonly>
+
+											<span class="input-group-btn">
+												<a href="#" class="btn btn-default">
+													<i class="glyphicon glyphicon-th"></i>
+												</a>
+											</span>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="alert alert-danger hide"></div>
+									</div>
 								</div>
 							</div>
-							<div class="col-md-6">
-								<div class="alert alert-danger hide"></div>
+							
+							<div class="form-group">
+								<label for="event_active">Event Active</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="event_active" value="1"
+										<?php echo isset($post['event_active']) && $post['event_active'] == 1 ? 'checked="checked"' : ''; ?>
+										<?php echo !isset($post['event_active']) ? 'checked="checked"' : ''; ?>> Active
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="event_active" value="0"
+										<?php echo isset($post['event_active']) && $post['event_active'] == 0 ? 'checked="checked"' : ''; ?>> Inactive
+									</label>
+								</div>
 							</div>
-						</div>
+							<div class="form-group">
+								<input type="submit" class="btn btn-primary btn-sm" name="add_event" value="Submit">
+							</div>
+						</form>
 					</div>
-					
-					<div class="form-group">
-						<label for="event_active">Event Active</label>
-						<div class="radio">
-							<label>
-								<input type="radio" name="event_active" value="1"
-								<?php echo isset($post['event_active']) && $post['event_active'] == 1 ? 'checked="checked"' : ''; ?>
-								<?php echo !isset($post['event_active']) ? 'checked="checked"' : ''; ?>> Active
-							</label>
-						</div>
-						<div class="radio">
-							<label>
-								<input type="radio" name="event_active" value="0"
-								<?php echo isset($post['event_active']) && $post['event_active'] == 0 ? 'checked="checked"' : ''; ?>> Inactive
-							</label>
-						</div>
-					</div>
-					<div class="form-group">
-						<input type="submit" class="btn btn-primary btn-sm" name="add_event" value="Submit">
-					</div>
-				</form>
+				</div>
 			</div>
 		</div>
 	</section>
 </div>
 
+<script type="text/javascript" src="/assets/scripts/cropper.js"></script>
+<script type="text/javascript" src="/assets/cropper-master/examples/crop-avatar/js/crop-avatar.js"></script>
+
+<script type="text/javascript" src="/assets/tinymce/tinymce.min.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
+		// tinymce textarea
+		tinymce.init({
+			selector : 'textarea#event_text',
+			theme    : 'modern',
+			plugins  : "image",
+		    height   : 300,
+		});
+
 	    $('button.add-more').click(function(e){
 	        e.preventDefault();
 	        var append_input = '<div class="form-input"> \

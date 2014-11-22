@@ -31,11 +31,9 @@ class Control_Page_Ministry_Members extends Control_Page {
 	/* Public Methods
 	-------------------------------*/
 	public function render() {
-		$this->_ministry = isset($this->_request['variables'][0]) ? $this->_request['variables'][0] : null;
-		$this->_var 	 = isset($this->_request['variables'][1]) ? $this->_request['variables'][1] : null;
-
-		// set file upload member path
-		$this->_memberPath = dirname(__FILE__).'/../../../../../uploads/member/';
+		$this->_ministry   = isset($this->_request['variables'][0]) ? $this->_request['variables'][0] : null;
+		$this->_var 	   = isset($this->_request['variables'][1]) ? $this->_request['variables'][1] : null;
+		$this->_memberPath = $this->_uploads.'/member';
 
 		if (isset($_GET['action']) && $_GET['action'] == 'deleteMember') { $this->_deleteMember($_GET['id']); }
 
@@ -71,9 +69,9 @@ class Control_Page_Ministry_Members extends Control_Page {
 		$query = $this->_collection['member']->find($filter)
 			->skip($start)
 			->limit(self::RANGE)
-			->sort(array('ministry_updated' => -1));
+			->sort(array('member_updated' => -1));
 
-		$members = iterator_to_array($query);		
+		$members = iterator_to_array($query);
 		return $members;
 	}
 
@@ -101,9 +99,7 @@ class Control_Page_Ministry_Members extends Control_Page {
 	}
 
 	protected function _setFilter() {
-		$filter = array(
-			'member_ministry' => $this->_ministry,
-			'member_active'   => 1);
+		$filter = array('member_ministry' => $this->_ministry);
 
 		switch ($this->_var) {
 			case 'active':		$filter['member_active'] = 1; break;
@@ -111,7 +107,7 @@ class Control_Page_Ministry_Members extends Control_Page {
 			case 'request':		$filter['member_active'] = 2; break;
 		}
 
-		if (isset($_GET['q'])) { $filter['member_name'] = $_GET['q']; }
+		if (isset($_GET['q'])) { $filter['member_fullname'] = array('$regex' => $_GET['q']); }
 		
 		return $filter;
 	}

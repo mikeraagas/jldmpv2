@@ -1,0 +1,152 @@
+<link rel="stylesheet" href="/assets/styles/cropper.css">
+<link rel="stylesheet" href="/assets/cropper-master/examples/crop-avatar/css/crop-avatar.css">
+
+<style type="text/css">
+	.add-news-main .alert-danger .icon { float: left; padding-right: 10px; }
+	.add-news-main .alert-danger .error-msgs { float: left; }
+</style>
+
+<div class="add-news-container container">
+	
+	<section class="page-header ministry-header row">
+		<div class="col-md-12 clearfix">
+			<h2 class="pull-left">Add Ministry News <small>Settings</small></h2>
+			<a href="/ministry/<?php echo $ministry_id; ?>/news" class="btn btn-success pull-right"><i class="fa fa-th-list"></i>&nbsp; Back to News List</a>
+		</div>
+	</section>
+
+	<section class="add-news-main clearfix">
+		<?php include(dirname(__FILE__).'/../_menu.phtml'); ?>
+		
+		<?php if (!empty($errors)): ?>
+			<div class="alert alert-danger clearfix">
+				<div class="icon">
+					<i class="fa fa-exclamation-circle fa-lg"></i>
+				</div>
+				<div class="error-msgs">
+					<?php foreach ($errors as $error): ?>
+						<span style="display: block; margin-bottom: 5px;"><?php echo $error; ?></span>
+					<?php endforeach ?>
+				</div>
+			</div>
+		<?php endif ?>
+
+		<?php include(dirname(__FILE__).'/../../_msg.phtml'); ?>
+
+		<div class="row">
+			<div class="col-md-3">
+				<div class="panel panel-default">
+					<div class="panel-heading"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; News Images</div>
+					<div class="panel-body" id="crop-avatar">
+						<div class="news-image avatar-view" title="Upload News Image">
+							<?php if (!empty($post['news_image'])): ?>
+								<img src="/uploads/news/<?php echo $post['news_image']['file_name']; ?>">
+							<?php else: ?>
+								<img src="/assets/images/placeholder.png">
+							<?php endif ?>
+
+							<span class="btn btn-success btn-sm">
+								<i class="fa fa-image"></i>&nbsp; Update News Photo
+							</span>
+						</div>
+
+						<div class="modal fade" id="avatar-modal" tabindex="-1" role="dialog" aria-labelledby="avatar-modal-label" aria-hidden="true">
+							<div class="modal-dialog modal-lg">
+								<div class="modal-content">
+									<form class="avatar-form" method="post" action="" enctype="multipart/form-data">
+										<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal">&times;</button>
+											<h4 class="modal-title" id="avatar-modal-label">Change Avatar</h4>
+										</div>
+										<div class="modal-body">
+											<div class="avatar-body">
+												<!-- Upload image and data -->
+												<div class="avatar-upload">
+													<input class="avatar-src" name="avatar_src" type="hidden">
+													<input class="avatar-data" name="avatar_data" type="hidden">
+													<label for="avatarInput">Local upload</label>
+													<input class="avatar-input" id="avatarInput" name="file" type="file">
+												</div>
+
+												<!-- Crop and preview -->
+												<div class="row">
+													<div class="col-md-9">
+														<div class="avatar-wrapper"></div>
+													</div>
+													<div class="col-md-3">
+														<div class="avatar-preview preview-lg"></div>
+														<div class="avatar-preview preview-md"></div>
+														<div class="avatar-preview preview-sm"></div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="modal-footer">
+											<button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+											<button class="btn btn-primary avatar-save" type="submit">Save</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div><!-- /.modal -->
+					</div>
+				</div>
+			</div>
+			<div class="col-md-9">
+				<div class="panel panel-default">
+					<div class="panel-heading"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; News Information</div>
+					<div class="panel-body">
+						<form action="" method="post">
+							<div class="form-group">
+								<label for="news_title">News Title</label>
+								<input type="text" name="news_title" id="news_title" class="form-control" placeholder="Title"
+								value="<?php echo isset($post['news_title']) ? $post['news_title'] : ''; ?>">
+							</div>
+							<div class="form-group">
+								<label for="news_details">News Details</label>
+								<textarea name="news_details" id="news_details" class="form-control" cols="30" rows="10" placeholder="Description"><?php echo isset($post['news_details']) ? $post['news_details'] : ''; ?></textarea>
+							</div>
+							
+							<div class="form-group">
+								<label for="news_active">News Active</label>
+								<div class="radio">
+									<label>
+										<input type="radio" name="news_active" value="1"
+										<?php echo isset($post['news_active']) && $post['news_active'] == 1 ? 'checked="checked"' : ''; ?>
+										<?php echo !isset($post['news_active']) ? 'checked="checked"' : ''; ?>> Active
+									</label>
+								</div>
+								<div class="radio">
+									<label>
+										<input type="radio" name="news_active" value="0"
+										<?php echo isset($post['news_active']) && $post['news_active'] == 0 ? 'checked="checked"' : ''; ?>> Inactive
+									</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<input type="submit" class="btn btn-primary btn-sm" name="add_news" value="Submit">
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+
+
+<script type="text/javascript" src="/assets/scripts/cropper.js"></script>
+<script type="text/javascript" src="/assets/cropper-master/examples/crop-avatar/js/crop-avatar.js"></script>
+
+<script type="text/javascript" src="/assets/tinymce/tinymce.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		// tinymce textarea
+		tinymce.init({
+			selector : 'textarea#news_details',
+			theme    : 'modern',
+			plugins  : "image",
+		    height   : 300,
+		});
+	});
+</script>

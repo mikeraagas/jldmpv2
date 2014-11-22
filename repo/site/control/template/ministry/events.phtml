@@ -1,14 +1,21 @@
 <div class="ministry-event-container">
+	<ol class="breadcrumb">
+		<li><a href="/">Home</a></li>
+		<li><a href="/ministries">Ministry List</a></li>
+		<li class="active">Events</li>
+	</ol>
+
 	<section class="page-header ministry-header clearfix">
 		<h2 class="pull-left">Events <small>settings</small></h2>
 
 		<div class="page-header-actions pull-right">
-			<a href="/ministry" class="btn btn-success"><i class="fa fa-th-list"></i>&nbsp; Back to Ministry List</a>
+			<a href="/ministries" class="btn btn-success"><i class="fa fa-th-list"></i>&nbsp; Back to Ministry List</a>
 			<a href="/ministry/<?php echo $ministry_id; ?>/event/add" class="btn btn-info">
 				<i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Add Event
 			</a>
 		</div>
 	</section>
+
 	<section class="ministry-event-main container">
 		<?php include(dirname(__FILE__).'/_menu.phtml'); ?>
 		
@@ -107,8 +114,8 @@
 											</a>
 										</div>
 									</td>
-									<td><?php echo date('F j, Y', $event['event_start']); ?></td>
-									<td><?php echo date('F j, Y', $event['event_end']); ?></td>
+									<td><?php echo date('F j, Y g:i a', $event['event_start']); ?></td>
+									<td><?php echo date('F j, Y g:i a', $event['event_end']); ?></td>
 									<td><?php echo date('Y-m-d', $event['event_updated']->sec); ?></td>
 								</tr>
 							<?php endforeach ?>

@@ -36,11 +36,12 @@ class Control_Page_Ministry_Edit extends Control_Page {
 	-------------------------------*/
 	public function render() {
 		$this->_id = isset($this->_request['variables'][0]) ? $this->_request['variables'][0] : null;
-		$this->_ministryPath = dirname(__FILE__).'/../../../../../uploads/ministry/';
+		$this->_ministryPath = $this->_uploads.'/ministry';
 
 		if (isset($_GET['action']) && $_GET['action'] == 'remove_image') { $this->_removeImage($_GET['id']); }
-		if (isset($_FILES['file'])) {
-			if ($this->_validateUpload($_FILES['file'])) { $this->_uploadMinistryImage(); }
+		
+		if (isset($_FILES['file']) && isset($_POST['avatar_src']) && isset($_POST['avatar_data'])) {
+			$this->_cropImage();
 		}
 		
 		$post = $this->_getMinistry();
@@ -82,7 +83,7 @@ class Control_Page_Ministry_Edit extends Control_Page {
 		$ministry = $this->_collection['ministry']->findOne($ministryFilter);
 
 		if (empty($ministry)) {
-			header('Location: /ministry');
+			header('Location: /ministries');
 			exit;
 		}
 
@@ -126,7 +127,7 @@ class Control_Page_Ministry_Edit extends Control_Page {
 			'$set' => array(
 				'ministry_title' 		=> $post['ministry_title'],
 				'ministry_description' 	=> $post['ministry_description'],
-				'ministry_active' 		=> $post['ministry_active'],
+				'ministry_active' 		=> (int) $post['ministry_active'],
 				'ministry_updated' 		=> new MongoDate()
 			)
 		);
@@ -142,107 +143,82 @@ class Control_Page_Ministry_Edit extends Control_Page {
 		exit;
 	}
 
-	protected function _uploadMinistryImage() {
-		foreach ($this->_fileTmpPaths as $key => $fileTmpPath) {
-			// move uploaded file
-			if (move_uploaded_file($fileTmpPath, $this->_ministryPath.$this->_fileNames[$key])) {
-				// base64_encode image
-				$extension = explode('.', $this->_fileNames[$key]);
-				$extension = end($extension);
+	protected function _cropImage() {
+		require($this->_lib.'/cropper/crop-avatar.php');
 
-				$rand = str_shuffle(basename($this->_fileNames[$key])).rand(11111, 99999);
-				$filename  = md5($rand);
-				$filename  = $filename.'.'.$extension;
-				
-				rename($this->_ministryPath.$this->_fileNames[$key], $this->_ministryPath.$filename);
+		$crop = new CropAvatar();
+		$cropResult = $crop->cropImage($_POST['avatar_src'], $_POST['avatar_data'], $_FILES['file']);
 
-				// check if image already exists
-				$filter = array(
-					'file_parent' => $this->_id,
-					'file_active' => 1,
-					'file_type'   => 'ministry');
+		$response = array('state' => 200);
 
-				$exists = $this->_collection['file']->findOne($filter);
+		if ($cropResult['status']) {
+			$uploadResult = $this->_uploadMinistryImage($cropResult['dst']);
+			$uploadAbsolutePath = 'http://'.$_SERVER['SERVER_NAME'].'/uploads/ministry';
 
-				// if image exists update file and database
-				if (!empty($exists)) {
-					unlink($this->_ministryPath.$exists['file_name']);
+			$response['message'] = $uploadResult['msg'];
+			$response['result']  = $uploadAbsolutePath.'/'.$uploadResult['filename'];
 
-					// update datebase file name
-					$settings = array('$set' => array('file_name' => $filename));
-					$filter   = array('_id' => new MongoId($exists['_id']->{'$id'}));
-
-					$this->_collection['file']->update($filter, $settings);
-
-					$_SESSION['msg'][] = array(
-						'type' 	=> 'success',
-						'msg'	=> 'Successfully updated ministry image.');
-
-					header('Location: /ministry/edit/'.$this->_id);
-					exit;
-				}
-
-				// add ministry image
-				$fileSettings = array(
-					'file_parent' 	 => $this->_id,
-					'file_name' 	 => $filename,
-					'file_extension' => $this->_fileTypes[$key],
-					'file_type'		 => 'ministry',
-					'file_active'	 => 1,
-					'file_primary'	 => 1,
-					'file_created'	 => new MongoDate(),
-					'file_updated'	 => new MongoDate());
-
-				$this->_collection['file']->insert($fileSettings);
-				
-				// edit ministry updated to time
-				$ministrySettings = array('ministry_updated' => new MongoDate());
-				$ministryFilter   = array('_id', new MongoId($this->_id));
-
-				$this->_collection['ministry']->update($ministryFilter, $ministrySettings);
-				continue;
-			}
-
-			$_SESSION['msg'][] = array(
-				'type' 	=> 'danger',
-				'msg'	=> 'Image upload failed, possibly due to incorrect permissions on the upload folder.');
-
-			$this->_redirect();
+			echo json_encode($response);
+		    exit;
 		}
 
-		unset($fileTmpPath);
+	    $response['message'] = $cropResult['msg'];
+	    $response['result']  = $cropResult['result'];
 
-		$_SESSION['msg'][] = array(
-			'type' 	=> 'success',
-			'msg'	=> 'Successfully uploaded ministry profile image.');
-
-		$this->_redirect();
+	    echo json_encode($response);
+	    exit;
 	}
 
-	protected function _removeImage($id) {
-		$filter = array(
-			'_id' 	  => new MongoId($id),
-			'file_parent' => $this->_id,
-			'file_active' => 1,
-			'file_type'   => 'ministry');
+	protected function _uploadMinistryImage($fileTmpPath) {
+		$file = basename($fileTmpPath);
 
-		$image = $this->_collection['file']->findOne($filter);
+		// move uploaded file
+		if (rename($fileTmpPath, $this->_ministryPath.'/'.$file)) {
+			// base64_encode image
+			$extension = explode('.', $file);
+			$extension = end($extension);
 
-		$filter = array('_id' => new MongoId($id));
-		$this->_collection['file']->remove($filter, array('justOne' => true));
+			$rand 		= str_shuffle(basename($file)).rand(11111, 99999);
+			$filename  	= md5($rand);
+			$filename  	= $filename.'.'.$extension;
 
-		unlink($this->_ministryPath.$image['file_name']);
+			rename($this->_ministryPath.'/'.$file, $this->_ministryPath.'/'.$filename);
 
-		$_SESSION['msg'][] = array(
-			'type'  => 'success',
-			'msg'	=> 'Successfully removed image.');
+			// check if file exists
+			$existsFilter = array(
+				'file_parent'  => $this->_id,
+				'file_type'    => 'ministry',
+				'file_active'  => 1,
+				'file_primary' => 1);
 
-		$this->_redirect();
-	}
+			$exists = $this->_collection['file']->findOne($existsFilter);
 
-	protected function _redirect() {
-		header('Location: /ministry/edit/'.$this->_id);
-		exit;
+			if (!empty($exists)) {
+				unlink($this->_ministryPath.'/'.$exists['file_name']);
+
+				// update datebase file name
+				$settings = array('$set' => array(
+					'file_name'    => $filename,
+					'file_updated' => new MongoDate()));
+
+				$filter = array('_id' => $exists['_id']);
+				$this->_collection['file']->update($filter, $settings);
+
+				$response = array(
+					'status'   => 'success',
+					'msg'      => 'Successfully uploaded image',
+					'filename' => $filename);
+
+				return $response;
+			}
+		}
+
+		$response = array(
+				'status'   => 'error',
+				'msg'      => 'File not found!',
+				'filename' => $filename);
+
+		return $response;
 	}
 
 	/* Private Methods

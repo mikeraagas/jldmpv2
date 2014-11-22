@@ -59,7 +59,7 @@ class Control_Page_Login extends Control_Page {
 		if (empty($admin)) {
 			$_SESSION['msg'][] = array(
 				'type' => 'danger',
-				'msg' => 'Incorrect username or password');
+				'msg'  => 'Incorrect username or password');
 
 			header('Location: /login');
 			exit;

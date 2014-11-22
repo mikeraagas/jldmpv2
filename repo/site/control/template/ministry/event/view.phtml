@@ -7,38 +7,32 @@
 		<?php include(dirname(__FILE__).'/../_menu.phtml'); ?>
 
 		<?php include(dirname(__FILE__).'/../../_msg.phtml'); ?>
-			
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<i class="glyphicon glyphicon-info-sign"></i>&nbsp; Event Information
-			</div>
-			<div class="panel-body">
-				<div class="row">
-					<div class="col-md-12 clearfix">
-				        <label for="event_images">Event Images</label>
-						<div class="event-uploaded-images row">
-							<div class="col-md-12 clearfix">
-								<?php if (!empty($event['event_images'])): ?>
-									<?php foreach ($event['event_images'] as $key => $image): ?>
-										<div class="upload-image">
-											<div class="image-thumbnail">
-												<img src="/uploads/event/<?php echo $image['file_name']; ?>">
-											</div>
-										</div>
-									<?php endforeach ?>
-								<?php endif ?>
-							</div>
+
+		<div class="row">
+			<div class="col-md-3">
+				<div class="panel panel-default">
+					<div class="panel-heading"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Event Image</div>
+					<div class="panel-body" id="crop-avatar">
+						<div class="news-image avatar-view" title="Upload News Image">
+							<?php if (!empty($event['event_image'])): ?>
+								<img src="/uploads/event/<?php echo $event['event_image']['file_name']; ?>">
+							<?php else: ?>
+								<img src="/assets/images/placeholder.png">
+							<?php endif ?>
 						</div>
 					</div>
-				</div><hr>
-				<div class="row">
-					<div class="col-md-12">
+				</div>
+			</div>
+			<div class="col-md-9">
+				<div class="panel panel-default">
+					<div class="panel-heading"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Event Image</div>
+					<div class="panel-body">
 						<h3><?php echo $event['event_title']; ?></h3><br>
 						<p><?php echo $event['event_text']; ?></p>
 						<p><?php echo date('F j, Y', $event['event_start']); ?> - <?php echo date('F j, Y', $event['event_end']); ?></p>
 					</div>
 				</div>
 			</div>
-		</div>
+		</div>			
 	</section>
 </div>

@@ -13,6 +13,7 @@
 
 .ministry-container .page-header { clear: both; overflow: hidden; margin: 20px 0; }
 .ministry-container .page-header .add-ministry { font-size: 13px; margin-top: 10px; }
+.ministry-container .ministry-main .pagination { margin: 0; }
 
 .ministry-list { clear: both; }
 .ministry-list table { margin-top: 20px; border: 1px solid #ddd; }
@@ -73,12 +74,8 @@
 /* ------------------- Edit Ministry ------------------- */
 
 .edit-ministry-form input, .edit-ministry-form textarea { font-size: 13px; }
-
-.edit-ministry-form .ministry-form-settings { width: 460px; margin-right: 40px; }
 .edit-ministry-form .ministry-form-settings textarea { height: 150px; }
 .edit-ministry-form .ministry-form-settings h4 { color: #8DCD8D; }
-
-.edit-ministry-form .admin-form-settings { width: 460px; }
 .edit-ministry-form .admin-form-settings button { font-size: 13px; }
 .edit-ministry-form .admin-form-settings h4 { color: #8DCD8D; }
 
@@ -137,3 +134,9 @@
 
 .event-date .input-group-addon { border-radius: 0; }
 .event-date .alert { margin-bottom: 0; margin-top: 16px; }
+
+
+/* ------------------- Ministry News ------------------- */
+
+.ministry-news-container .pagination { margin: 0; }
+.ministry-news-container .table .table-actions hr { margin: 10px 0; }

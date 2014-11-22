@@ -1,0 +1,19 @@
+<section class="right-panel panel">
+	<div class="ministry-image">
+		<img src="/uploads/ministry/<?php echo $ministry['ministry_image']['file_name']; ?>" alt="ministry image">
+		<a href="#" class="join-ministry"><i class="fa fa-plus"></i>&nbsp; Join</a>
+	</div>
+	<div class="ministry-coordinator">
+		<p class="admin">
+			<i class="glyphicon glyphicon-user"></i>&nbsp; Coordinator:
+			<?php echo $ministry['ministry_admin']['admin_name']; ?>
+		</p>
+		<p class="email">
+			<i class="glyphicon glyphicon-envelope"></i>&nbsp; Email:
+			<?php echo $ministry['ministry_admin']['admin_email']; ?>
+		</p>
+	</div>
+	<div class="ministry-text">
+		<p><?php echo $ministry['ministry_description']; ?></p>
+	</div>
+</section>

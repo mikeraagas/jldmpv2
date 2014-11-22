@@ -1,6 +1,6 @@
 <div class="index-container">
-	<div class="content-middle">
-		<section class="upcoming-event clearfix">
+	<section class="upcoming-event">
+		<div class="content-middle clearfix">
 			<div class="column first-column">
 				<p class="event-label"><i class="fa fa-calendar"></i>&nbsp; Upcoming Event:</p>
 				<p class="event-title">Sample Event Title</p>
@@ -30,10 +30,12 @@
 					<a href="#" class="view-all">View all Events &nbsp;&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></a>
 				</div>
 			</div>
-		</section>
+		</div>
+	</section>
 		
-		<section class="index-main">
-			<div class="first-row clearfix">
+	<section class="index-main">
+		<div class="first-row">
+			<div class="content-middle clearfix">
 				<section class="featured-ministries">
 					<div class="list-header clearfix">
 						<h4>Ministries</h4>
@@ -42,20 +44,24 @@
 					<div class="ministry-list-container clearfix">
 						<?php foreach ($ministries as $ministry): ?>
 							<div class="ministry-template">
-								<div class="ministry-image">
-									<!-- <img src="http://lorempixel.com/270/170/sports" /> -->
+								<a class="ministry-image">
 									<img src="/uploads/ministry/<?php echo $ministry['ministry_image']['file_name']; ?>" />
-								</div>
+								</a>
+								<a href="#" class="join-ministry"><i class="fa fa-plus"></i>&nbsp; Join</a>
 								<div class="ministry-text">
 									<p class="title"><?php echo $ministry['ministry_title']; ?></p>
+									<p class="sub-title">
+										<span class="members">10 Members</span> |
+										<span class="events">5 Events</span>
+									</p>
 									<p class="description">
 										<?php echo strlen($ministry['ministry_description']) > 100 ? substr($ministry['ministry_description'], 0, 100).'...' : $ministry['ministry_description']; ?>
 									</p>
 								</div>
-								<div class="ministry-actions clearfix">
-									<a href="#" class="view-details-btn"><i class="fa fa-long-arrow-right"></i>&nbsp; View Details</a>
-									<a href="#" class="join-now-btn">Join Now</a>
+								<div class="ministry-actions">
+									<a href="#" class="view-details-btn"><i class="fa fa-long-arrow-right"></i>&nbsp; Read More</a>
 								</div>
+								<span class="bottom-bar"></span>
 							</div>
 						<?php endforeach ?>
 					</div>
@@ -85,8 +91,10 @@
 					</ul>
 				</section>
 			</div>
+		</div>
 
-			<div class="second-row index-quote">
+		<div class="second-row index-quote">
+			<div class="content-middle">
 				<div class="index-quote-header clearfix">
 					<h4>Bible Quotes</h4>
 					<a href="#">View More</a>
@@ -139,10 +147,9 @@
 						</div>
 					</div>
 				</div>
-
 			</div>
-		</section>
-	</div>
+		</div>
+	</section>
 
 	<section class="index-menu">
 		<div class="index-menu-content clearfix">

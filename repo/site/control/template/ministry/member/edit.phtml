@@ -1,3 +1,6 @@
+<link rel="stylesheet" href="/assets/styles/cropper.css">
+<link rel="stylesheet" href="/assets/cropper-master/examples/crop-avatar/css/crop-avatar.css">
+
 <div class="ministry-member-add-container">
 	<ol class="breadcrumb">
 		<li><a href="/">Home</a></li>
@@ -20,140 +23,167 @@
 
 		<?php include(dirname(__FILE__).'/../../_msg.phtml'); ?>
 
-		<div class="panel panel-default">
-			<div class="panel-heading"><i class="glyphicon glyphicon-info-sign"></i>&nbsp; Update Member</div>
-			<div class="panel-body">
-				<div class="row">
-					<div class="col-md-3">
-						<div class="member-uploaded-images clearfix">
-							<div class="upload-image">
-								<div class="image-thumbnail">
-									<?php if (!empty($post['member_image'])): ?>
-										<img src="/uploads/member/<?php echo $post['member_image']['file_name']; ?>">
-									<?php else: ?>
-										<img src="/assets/images/placeholder.png">
-									<?php endif ?>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-9">
-						<form action="" method="post" enctype="multipart/form-data" id="event_images_form" class="event-images-form">
-							<div class="upload-input-container">
-								<div class="form-input">
-								    <input name="file[]" type="file" />
-								</div>
-							</div>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="panel panel-default">
+					<div class="panel-heading"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; News Images</div>
+					<div class="panel-body" id="crop-avatar">
+						<div class="member-image avatar-view" title="Upload Event Image">
+							<?php if (!empty($post['member_image'])): ?>
+								<img src="/uploads/member/<?php echo $post['member_image']['file_name']; ?>">
+							<?php else: ?>
+								<img src="/assets/images/placeholder.png">
+							<?php endif ?>
 
-						    <input type="submit" class="btn btn-primary btn-sm" value="Update Profile Picture" id="upload"/>
-						    
-						    <?php if (!empty($post['member_image'])): ?>
-							    <a href="/ministry/<?php echo $ministry_id; ?>/member/edit/<?php echo $post['_id']->{'$id'}; ?>?action=remove_image&id=<?php echo $post['member_image']['_id']->{'$id'}; ?>"
-							    class="remove-image-btn btn btn-danger btn-sm">
-									<i class="fa fa-times-circle"></i>&nbsp; Remove Image
-							    </a>
-						    <?php endif ?>
-					    </form>								
+							<span class="btn btn-success btn-sm">
+								<i class="fa fa-image"></i>&nbsp; Update News Photo
+							</span>
+						</div>
+
+						<div class="modal fade" id="avatar-modal" tabindex="-1" role="dialog" aria-labelledby="avatar-modal-label" aria-hidden="true">
+							<div class="modal-dialog modal-lg">
+								<div class="modal-content">
+									<form class="avatar-form" method="post" action="" enctype="multipart/form-data">
+										<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal">&times;</button>
+											<h4 class="modal-title" id="avatar-modal-label">Change Avatar</h4>
+										</div>
+										<div class="modal-body">
+											<div class="avatar-body">
+												<!-- Upload image and data -->
+												<div class="avatar-upload">
+													<input class="avatar-src" name="avatar_src" type="hidden">
+													<input class="avatar-data" name="avatar_data" type="hidden">
+													<label for="avatarInput">Local upload</label>
+													<input class="avatar-input" id="avatarInput" name="file" type="file">
+												</div>
+
+												<!-- Crop and preview -->
+												<div class="row">
+													<div class="col-md-9">
+														<div class="avatar-wrapper"></div>
+													</div>
+													<div class="col-md-3">
+														<div class="avatar-preview preview-lg"></div>
+														<div class="avatar-preview preview-md"></div>
+														<div class="avatar-preview preview-sm"></div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="modal-footer">
+											<button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+											<button class="btn btn-primary avatar-save" type="submit">Save</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div><!-- /.modal -->
+					</div>
+				</div>
+			</div>
+			<div class="col-md-9">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<i class="glyphicon glyphicon-info-sign"></i>&nbsp; Update Member
+					</div>
+					<div class="panel-body">
+						<form action="" method="post" class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="member_fullname">Full Name</label>
+									<input type="text" name="member_fullname" id="member_fullname" class="form-control" placeholder="Member Full Name"
+									value="<?php echo isset($post['member_fullname']) ? $post['member_fullname'] : ''; ?>">
+								</div>
+								<div class="form-group">
+									<label for="member_email">Email</label>
+									<input type="text" name="member_email" id="member_email" class="form-control" placeholder="Member Email" 
+									value="<?php echo isset($post['member_email']) ? $post['member_email'] : ''; ?>">
+								</div>
+								<div class="form-group">
+									<label for="member_phone">Phone</label>
+									<input type="text" name="member_phone" id="member_phone" class="form-control" placeholder="Member Phone" 
+									value="<?php echo isset($post['member_phone']) ? $post['member_phone'] : ''; ?>">
+								</div>
+								<div class="form-group">
+									<label for="member_address">Address</label>
+									<textarea name="member_address" class="form-control" cols="30" rows="5" placeholder="Member Address"><?php echo isset($post['member_address']) ? $post['member_address'] : ''; ?></textarea>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="member_age">Age</label>
+									<input type="text" name="member_age" id="member_age" class="form-control" placeholder="Member Age" 
+									value="<?php echo isset($post['member_age']) ? $post['member_age'] : ''; ?>">
+								</div>
+								<div class="form-group">
+									<label for="member_type">Type</label>
+									<select name="member_type" class="form-control">
+										<option value="coordinator"
+										<?php echo isset($post['member_type']) && $post['member_type'] == 'coordinator' ? 'selected="selected"' : ''; ?>>Coordinator</option>
+
+										<option value="president"
+										<?php echo isset($post['member_type']) && $post['member_type'] == 'president' ? 'selected="selected"' : ''; ?>>President</option>
+										
+										<option value="vice president"
+										<?php echo isset($post['member_type']) && $post['member_type'] == 'vice_president' ? 'selected="selected"' : ''; ?>>Vice President</option>
+										
+										<option value="treasurer"
+										<?php echo isset($post['member_type']) && $post['member_type'] == 'treasurer' ? 'selected="selected"' : ''; ?>>Treasurer</option>
+										
+										<option value="member"
+										<?php echo isset($post['member_type']) && $post['member_type'] == 'member' ? 'selected="selected"' : ''; ?>>Member</option>
+									</select>
+								</div>
+								<div class="row">
+									<div class="form-group col-md-3">
+										<label for="member_age">Gender</label>
+										<div class="radio">
+											<label>
+												<input type="radio" name="member_gender" value="male" 
+												<?php echo isset($post['member_gender']) && $post['member_gender'] == 'male' ? 'checked="checked"' : ''; ?>
+												<?php echo !isset($post['member_gender']) ? 'checked="checked"' : ''; ?>> Male
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input type="radio" name="member_gender" value="female"
+												<?php echo isset($post['member_gender']) && $post['member_gender'] == 'female' ? 'checked="checked"' : ''; ?>> Female
+											</label>
+										</div>
+									</div>
+									<div class="form-group col-md-9">
+										<label for="member_age">Active</label>
+										<div class="radio">
+											<label>
+												<input type="radio" name="member_active" value="1"
+												<?php echo isset($post['member_active']) && $post['member_active'] == 1 ? 'checked="checked"' : ''; ?>
+												<?php echo !isset($post['member_active']) ? 'checked="checked"' : ''; ?>> Active
+											</label>
+										</div>
+										<div class="radio">
+											<label>
+												<input type="radio" name="member_active" value="0"
+												<?php echo isset($post['member_active']) && $post['member_active'] == 0 ? 'checked="checked"' : ''; ?>> Inactive
+											</label>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<input type="submit" class="btn btn-primary" name="edit_member" value="Submit">
+								</div>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>
 		</div>
-		
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<i class="glyphicon glyphicon-info-sign"></i>&nbsp; Update Member
-			</div>
-			<div class="panel-body">
-				<form action="" method="post" class="row">
-					<div class="col-md-6">
-						<div class="form-group">
-							<label for="member_fullname">Full Name</label>
-							<input type="text" name="member_fullname" id="member_fullname" class="form-control" placeholder="Member Full Name"
-							value="<?php echo isset($post['member_fullname']) ? $post['member_fullname'] : ''; ?>">
-						</div>
-						<div class="form-group">
-							<label for="member_email">Email</label>
-							<input type="text" name="member_email" id="member_email" class="form-control" placeholder="Member Email" 
-							value="<?php echo isset($post['member_email']) ? $post['member_email'] : ''; ?>">
-						</div>
-						<div class="form-group">
-							<label for="member_phone">Phone</label>
-							<input type="text" name="member_phone" id="member_phone" class="form-control" placeholder="Member Phone" 
-							value="<?php echo isset($post['member_phone']) ? $post['member_phone'] : ''; ?>">
-						</div>
-						<div class="form-group">
-							<label for="member_address">Address</label>
-							<textarea name="member_address" class="form-control" cols="30" rows="5" placeholder="Member Address"><?php echo isset($post['member_address']) ? $post['member_address'] : ''; ?></textarea>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<div class="form-group">
-							<label for="member_age">Age</label>
-							<input type="text" name="member_age" id="member_age" class="form-control" placeholder="Member Age" 
-							value="<?php echo isset($post['member_age']) ? $post['member_age'] : ''; ?>">
-						</div>
-						<div class="form-group">
-							<label for="member_type">Type</label>
-							<select name="member_type" class="form-control">
-								<option value="coordinator"
-								<?php echo isset($post['member_type']) && $post['member_type'] == 'coordinator' ? 'selected="selected"' : ''; ?>>Coordinator</option>
-
-								<option value="president"
-								<?php echo isset($post['member_type']) && $post['member_type'] == 'president' ? 'selected="selected"' : ''; ?>>President</option>
-								
-								<option value="vice president"
-								<?php echo isset($post['member_type']) && $post['member_type'] == 'vice_president' ? 'selected="selected"' : ''; ?>>Vice President</option>
-								
-								<option value="treasurer"
-								<?php echo isset($post['member_type']) && $post['member_type'] == 'treasurer' ? 'selected="selected"' : ''; ?>>Treasurer</option>
-								
-								<option value="member"
-								<?php echo isset($post['member_type']) && $post['member_type'] == 'member' ? 'selected="selected"' : ''; ?>>Member</option>
-							</select>
-						</div>
-						<div class="row">
-							<div class="form-group col-md-3">
-								<label for="member_age">Gender</label>
-								<div class="radio">
-									<label>
-										<input type="radio" name="member_gender" value="male" 
-										<?php echo isset($post['member_gender']) && $post['member_gender'] == 'male' ? 'checked="checked"' : ''; ?>
-										<?php echo !isset($post['member_gender']) ? 'checked="checked"' : ''; ?>> Male
-									</label>
-								</div>
-								<div class="radio">
-									<label>
-										<input type="radio" name="member_gender" value="female"
-										<?php echo isset($post['member_gender']) && $post['member_gender'] == 'female' ? 'checked="checked"' : ''; ?>> Female
-									</label>
-								</div>
-							</div>
-							<div class="form-group col-md-9">
-								<label for="member_age">Active</label>
-								<div class="radio">
-									<label>
-										<input type="radio" name="member_active" value="1"
-										<?php echo isset($post['member_active']) && $post['member_active'] == 1 ? 'checked="checked"' : ''; ?>
-										<?php echo !isset($post['member_active']) ? 'checked="checked"' : ''; ?>> Active
-									</label>
-								</div>
-								<div class="radio">
-									<label>
-										<input type="radio" name="member_active" value="0"
-										<?php echo isset($post['member_active']) && $post['member_active'] == 0 ? 'checked="checked"' : ''; ?>> Inactive
-									</label>
-								</div>
-							</div>
-						</div>
-						<div class="form-group">
-							<input type="submit" class="btn btn-primary" name="edit_member" value="Submit">
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
 	</section>
 </div>
+
+<script type="text/javascript" src="/assets/scripts/cropper.js"></script>
+<script type="text/javascript" src="/assets/cropper-master/examples/crop-avatar/js/crop-avatar.js"></script>
+
 
 <script type="text/javascript">
 	$(document).ready(function(){

@@ -1,0 +1,67 @@
+<link rel="stylesheet" href="/assets/cropper-master/examples/crop-avatar/css/crop-avatar.css">
+
+<style type="text/css">
+	.add-news-main .alert-danger .icon { float: left; padding-right: 10px; }
+	.add-news-main .alert-danger .error-msgs { float: left; }
+	.avatar-view { height: auto; margin: 0 auto; position: relative; width: 100%; }
+	.avatar-view span { bottom: 15px; left: 16%; position: absolute; }
+	.view-news-main .news-details { margin: 30px 0; }
+</style>
+
+<div class="view-news-container container">
+	
+	<section class="page-header ministry-header row">
+		<div class="col-md-12 clearfix">
+			<h2 class="pull-left">Add Ministry News <small>Settings</small></h2>
+			<a href="/ministry/<?php echo $ministry_id; ?>/news" class="btn btn-success pull-right"><i class="fa fa-th-list"></i>&nbsp; Back to News List</a>
+		</div>
+	</section>
+
+	<section class="view-news-main clearfix">
+		<?php include(dirname(__FILE__).'/../_menu.phtml'); ?>
+		
+		<?php if (!empty($errors)): ?>
+			<div class="alert alert-danger clearfix">
+				<div class="icon">
+					<i class="fa fa-exclamation-circle fa-lg"></i>
+				</div>
+				<div class="error-msgs">
+					<?php foreach ($errors as $error): ?>
+						<span style="display: block; margin-bottom: 5px;"><?php echo $error; ?></span>
+					<?php endforeach ?>
+				</div>
+			</div>
+		<?php endif ?>
+
+		<?php include(dirname(__FILE__).'/../../_msg.phtml'); ?>
+
+		<div class="row">
+			<div class="col-md-3">
+				<div class="panel panel-default">
+					<div class="panel-heading"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; News Images</div>
+					<div class="panel-body" id="crop-avatar">
+						<div class="news-image avatar-view" title="Upload News Image">
+							<?php if (!empty($news['news_image'])): ?>
+								<img src="/uploads/news/<?php echo $news['news_image']['file_name']; ?>">
+							<?php else: ?>
+								<img src="/assets/images/placeholder.png">
+							<?php endif ?>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-9">
+				<div class="panel panel-default">
+					<div class="panel-heading"><i class="glyphicon glyphicon-plus-sign"></i>&nbsp; News Information</div>
+					<div class="panel-body">
+						<h3 class="news-title">
+							<?php echo $news['news_title']; ?>
+							<small><?php echo $news['news_active'] ? 'Active' : 'Inactive'; ?></small>
+						</h3>
+						<div class="news-details"><?php echo $news['news_details']; ?></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>

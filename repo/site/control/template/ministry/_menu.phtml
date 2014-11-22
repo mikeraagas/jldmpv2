@@ -1,13 +1,17 @@
 <ul class="nav nav-tabs">
 	<li class="<?php echo $class == 'view' ? 'active' : ''; ?>">
 		<a href="/ministry/view/<?php echo $ministry_id; ?>">Profile</a>
-	</li>
-	
+	</li>	
 	<li class="<?php echo $class == 'member' ? 'active' : ''; ?>">
 		<a href="/ministry/<?php echo $ministry_id; ?>/members">Members</a>
 	</li>
-	
 	<li class="<?php echo $class == 'event' ? 'active' : ''; ?>">
 		<a href="/ministry/<?php echo $ministry_id; ?>/events">Events</a>
+	</li>
+	<li class="<?php echo $class == 'news' ? 'active' : ''; ?>">
+		<a href="/ministry/<?php echo $ministry_id; ?>/news">News</a>
+	</li>
+	<li class="<?php echo $class == 'gallery' ? 'active' : ''; ?>">
+		<a href="/ministry/<?php echo $ministry_id; ?>/gallery">Gallery</a>
 	</li>
 </ul><br>

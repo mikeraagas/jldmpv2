@@ -1,0 +1,137 @@
+<div class="ministry-container">
+	<ol class="breadcrumb">
+		<li><a href="/">Home</a></li>
+		<li class="active">Ministry List</li>
+	</ol>
+
+	<section class="page-header ministry-header clearfix">
+		<h2 class="pull-left">Parish Ministries <small>settings</small></h2>
+
+		<div class="page-header-actions pull-right">
+			<a href="/ministry/add" class="btn btn-success add-ministry pull-right">
+				<i class="fa fa-plus-circle"></i>&nbsp; Add Ministry
+			</a>
+		</div>
+	</section>
+
+	<section class="ministry-main">
+		<?php include(dirname(__FILE__).'/_msg.phtml'); ?>
+
+		<div class="row">
+			<div class="col-md-3">
+				<div class="list-group">
+					<a href="/ministries" class="list-group-item
+					<?php echo $var == null ? 'active' : ''; ?>">
+						<i class="fa fa-th-list"></i>&nbsp; All
+					</a>
+					<a href="/ministries/active" class="list-group-item
+					<?php echo $var == 'active' ? 'active' : ''; ?>">
+						<i class="glyphicon glyphicon-ok"></i>&nbsp; Active
+					</a>
+					<a href="/ministries/not-active" class="list-group-item
+					<?php echo $var == 'not-active' ? 'active' : ''; ?>">
+						<i class="glyphicon glyphicon-remove"></i>&nbsp; Not Active
+					</a>
+				</div>
+			</div>
+			<div class="col-md-9">
+				<div class="row">
+					<form action="" method="get" class="ministry-search-form col-md-5">
+						<div class="input-group">
+							<input type="text" name="q" class="form-control input-search" placeholder="Search Ministry">
+							<span class="input-group-btn">
+								<button type="submit" class="btn btn-info"><i class="fa fa-search"></i>&nbsp; Search</button>
+							</span>
+						</div>
+					</form>
+					<div class="col-md-7">
+						<ul class="pagination pagination-sm pull-right">
+							<?php $range = $pg+5; $start = $range - 10; ?>
+							<?php $start = $start < 1 ? 1 : $start; ?>
+							<?php for($i = $start; $i <= $pages; $i++): ?>
+								<li<?php echo $i == $pg ? ' class="active"' : NULL; ?>>
+									<a href="?page=<?php echo $i; ?><?php echo isset($_GET['q']) && $_GET['q'] ? '&q='.$_GET['q'] : ''; ?>">
+										<?php echo $i; ?>
+									</a>
+								</li>
+								<?php if($range == $i) break; ?>
+							<?php endfor; ?>
+						</ul>
+					</div>
+				</div>
+				<div class="ministry-list clearfix">
+					<table class="table table-striped">
+						<thead>
+							<th>ID</th>
+							<th>Image</th>
+							<th>Title</th>
+							<th>Admin</th>
+							<th>Active</th>
+							<th>Ministry Updated</th>
+						</thead>
+						<tbody>
+							<?php if (!empty($ministries)): ?>
+								<?php foreach ($ministries as $ministry): ?>
+									<tr>
+										<td><?php echo $ministry['_id']; ?></td>
+										<td>
+											<a href="/ministry/view/<?php echo $ministry['_id']; ?>" class="img-thumbnail">
+												<?php if (!empty($ministry['ministry_image']['file_name'])): ?>
+													<img src="/uploads/ministry/<?php echo $ministry['ministry_image']['file_name']; ?>" width="80">
+												<?php else: ?>
+													<img src="/assets/images/placeholder.png" width="80">
+												<?php endif ?>
+											</a>
+										</td>
+										<td>
+											<p><strong><?php echo $ministry['ministry_title']; ?></strong></p>
+											
+											<div>
+												<a href="/ministry/view/<?php echo $ministry['_id']; ?>">
+													<i class="fa fa-share"></i>&nbsp; View
+												</a> |
+												<a href="/ministry/edit/<?php echo $ministry['_id']; ?>">
+													<i class="fa fa-pencil-square"></i>&nbsp; Edit
+												</a> |
+												<a href="/ministries?action=remove_ministry&id=<?php echo $ministry['_id']; ?>" class="remove-ministry">
+													<i class="fa fa-times-circle"></i>&nbsp; Remove
+												</a>
+											</div>
+										</td>
+										<td><?php echo $ministry['admin']['admin_name']; ?></td>
+										<td>
+											<?php 
+												switch ($ministry['ministry_active']) {
+													case 0:	$active = 'not-active'; $label = 'red'; break;
+													case 1:	$active = 'active'; $label = 'green'; break;
+												}
+											 ?>
+											<span class="<?php echo $label; ?>"><strong><?php echo $active; ?></strong></span>
+										</td>
+										<td><?php echo date('Y-m-d', $ministry['ministry_updated']->sec); ?></td>
+									</tr>
+								<?php endforeach ?>
+							<?php else: ?>
+								<tr><td colspan="6">No Ministry yet.</td></tr>
+							<?php endif ?>
+						</tbody>
+					</table>
+				</div>
+				<div class="row">
+					<ul class="pagination pagination-sm pull-right">
+						<?php $range = $pg+5; $start = $range - 10; ?>
+						<?php $start = $start < 1 ? 1 : $start; ?>
+						<?php for($i = $start; $i <= $pages; $i++): ?>
+							<li<?php echo $i == $pg ? ' class="active"' : NULL; ?>>
+								<a href="?page=<?php echo $i; ?><?php echo isset($_GET['q']) && $_GET['q'] ? '&q='.$_GET['q'] : ''; ?>">
+									<?php echo $i; ?>
+								</a>
+							</li>
+							<?php if($range == $i) break; ?>
+						<?php endfor; ?>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>

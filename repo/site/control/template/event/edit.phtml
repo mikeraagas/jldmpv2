@@ -27,6 +27,7 @@
 										<div class="upload-image">
 											<div class="image-thumbnail">
 												<img src="/uploads/event/<?php echo $image['file_name']; ?>">
+												<input type="text" value="<?php echo '/uploads/events/'.$image['file_name']; ?>" readonly>
 											</div>
 											<a href="/event/edit/<?php echo $post['_id']->{'$id'}; ?>?action=remove_image&id=<?php echo $image['_id']->{'$id'}; ?>" 
 											class="upload-actions remove-event-image" data-ids="<?php echo $image['_id']->{'$id'}; ?>">

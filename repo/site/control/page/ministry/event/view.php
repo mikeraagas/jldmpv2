@@ -55,16 +55,16 @@ class Control_Page_Ministry_Event_View extends Control_Page {
 		$event = $this->_collection['event']->findOne($eventFilter);
 		$eventId = $event['_id']->{'$id'};
 
-		$imagesFilter = array(
-			'file_parent' => $eventId,
-			'file_type'   => 'event',
-			'file_active' => 1);
+		$imageFilter = array(
+			'file_parent'  => $eventId,
+			'file_type'    => 'event',
+			'file_active'  => 1,
+			'file_primary' => 1);
 
 		// get event images
-		$query  = $this->_collection['file']->find($imagesFilter);
-		$images = iterator_to_array($query);
+		$image = $this->_collection['file']->findOne($imageFilter);
+		$event['event_image'] = $image;
 
-		$event['event_images'] = $images;
 		return $event;
 	}
 

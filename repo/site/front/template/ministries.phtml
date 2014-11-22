@@ -11,97 +11,59 @@
 			</div>
 		</div>
 	</section>
+	
+	<section class="content-main">
+		<div class="content-middle">
+			<?php $i = 1; ?>
+			<?php foreach ($ministries as $ministry): ?>
+				<?php if ($i == 1): ?>
+					<div class="ministry-list clearfix">
+				<?php endif ?>
 
-	<section class="content-middle content-main">
-		<div class="ministry-list clearfix">
-			<div class="ministry-template">
-				<div class="image">
-					<img src="/assets/images/placeholder.png" alt="ministry image">
-				</div>
-				<div class="description">
-					<p class="title">Ministry of Altar Server</p>
-					<p class="text">
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-					</p>
-				</div>
-				<div class="actions">
-					<a href="#">Read More</a>
-					<a href="#">Join</a>
-				</div>
-			</div>
-			<div class="ministry-template">
-				<div class="image">
-					<img src="/assets/images/placeholder.png" alt="ministry image">
-				</div>
-				<div class="description">
-					<p class="title">Ministry of Altar Server</p>
-					<p class="text">
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-					</p>
-				</div>
-				<div class="actions">
-					<a href="#">Read More</a>
-					<a href="#">Join</a>
-				</div>
-			</div>
-			<div class="ministry-template">
-				<div class="image">
-					<img src="/assets/images/placeholder.png" alt="ministry image">
-				</div>
-				<div class="description">
-					<p class="title">Ministry of Altar Server</p>
-					<p class="text">
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-					</p>
-				</div>
-				<div class="actions">
-					<a href="#">Read More</a>
-					<a href="#">Join</a>
-				</div>
-			</div>
-			<div class="ministry-template">
-				<div class="image">
-					<img src="/assets/images/placeholder.png" alt="ministry image">
-				</div>
-				<div class="description">
-					<p class="title">Ministry of Altar Server</p>
-					<p class="text">
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-					</p>
-				</div>
-				<div class="actions">
-					<a href="#">Read More</a>
-					<a href="#">Join</a>
-				</div>
-			</div>
-		</div>
+				<div class="ministry-template">
+					<a href="/ministry/view/<?php echo $ministry['_id']->{'$id'} ?>" class="image">
+						<img src="/uploads/ministry/<?php echo $ministry['ministry_image']['file_name']; ?>" alt="ministry image">
+					</a>
+					<a href="#" class="join-ministry"><i class="fa fa-plus"></i>&nbsp; Join</a>
+					<div class="description">
+						<p class="title">
+							<a href="/ministry/view/<?php echo $ministry['_id']->{'$id'} ?>">
+								<?php echo $ministry['ministry_title']; ?>
+							</a>
+						</p>
+						<p class="sub-title">
+							<span class="members">10 Members</span> |
+							<span class="events">5 Events</span>
+						</p>
 
-		<div class="ministry-list clearfix">
-			<div class="ministry-template">
-				<div class="image">
-					<img src="/assets/images/placeholder.png" alt="ministry image">
+						<p class="text">
+							<?php echo strlen($ministry['ministry_description']) > 100 ? substr($ministry['ministry_description'], 0, 100).'...' : $ministry['ministry_description']; ?>
+						</p>
+					</div>
+					<div class="actions">
+						<a href="/ministry/view/<?php echo $ministry['_id']->{'$id'} ?>">Read More</a>
+					</div>
+					<span class="bottom-bar"></span>
 				</div>
-				<div class="description">
-					<p class="title">Ministry of Altar Server</p>
-					<p class="text">
-						Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-						tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-						quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-					</p>
-				</div>
-				<div class="actions">
-					<a href="#">Read More</a>
-					<a href="#">Join</a>
-				</div>
-			</div>
+
+				<?php if ($i % 4 == 0): ?>
+					<?php if ($i == count($ministries)): ?>
+						</div>
+					<?php else: ?>
+						</div><div class="ministry-list clearfix">
+					<?php endif ?>
+				<?php endif ?>
+
+				<?php $i++; ?>
+			<?php endforeach ?>
 		</div>
 	</section>
 </div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		// $('.ministry-template').hover(function() {
+		// 	$(this).find('.image img').css({ top : '-15px' });
+		// });
+	});
+</script>

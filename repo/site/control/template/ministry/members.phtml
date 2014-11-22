@@ -1,15 +1,15 @@
 <div class="ministry-member-container">
 	<ol class="breadcrumb">
 		<li><a href="/">Home</a></li>
-		<li><a href="/ministry">Ministry List</a></li>
+		<li><a href="/ministries">Ministry List</a></li>
 		<li class="active">Members</li>
 	</ol>
 
 	<section class="page-header ministry-header clearfix">
-		<h2 class="pull-left">Members</h2>
+		<h2 class="pull-left">Members <small>settings</small></h2>
 
 		<div class="page-header-actions pull-right">
-			<a href="/ministry" class="btn btn-success"><i class="fa fa-th-list"></i>&nbsp; Back to Ministry List</a>
+			<a href="/ministries" class="btn btn-success"><i class="fa fa-th-list"></i>&nbsp; Back to Ministry List</a>
 			<a href="/ministry/<?php echo $ministry_id; ?>/member/add" class="btn btn-info">
 				<i class="glyphicon glyphicon-plus-sign"></i>&nbsp; Add Member
 			</a>
@@ -95,7 +95,7 @@
 										</div>
 									</td>
 									<td>
-										<?php echo ucwords($member['member_fullname']); ?>
+										<?php echo $member['member_fullname']; ?>
 									</td>
 									<td>
 										<?php 
@@ -109,16 +109,14 @@
 									</td>
 									<td><?php echo $member['member_type']; ?></td>
 									<td>
-										<a href="/ministry/<?php echo $ministry_id; ?>/member/view/<?php echo $member['_id']->{'$id'}; ?>" class="btn btn-info btn-xs">
+										<a href="/ministry/<?php echo $ministry_id; ?>/member/view/<?php echo $member['_id']->{'$id'}; ?>">
 											<i class="fa fa-share"></i>&nbsp; View
-										</a>
-
-										<a href="/ministry/<?php echo $ministry_id; ?>/member/edit/<?php echo $member['_id']->{'$id'}; ?>" class="btn btn-info btn-xs">
+										</a> |
+										<a href="/ministry/<?php echo $ministry_id; ?>/member/edit/<?php echo $member['_id']->{'$id'}; ?>">
 											<i class="fa fa-pencil-square"></i>&nbsp; Edit
-										</a>
-
-										<a href="/ministry/<?php echo $ministry_id; ?>/members?action=deleteMember&id=<?php echo $member['_id']->{'$id'} ?>"
-										class="btn btn-info btn-xs remove-member">
+										</a> |
+										<a href="/ministry/<?php echo $ministry_id; ?>/members?action=deleteMember&id=<?php echo $member['_id']->{'$id'}; ?>"
+										class="event-action-btn remove-event">
 											<i class="fa fa-times-circle"></i>&nbsp; Remove
 										</a>
 									</td>

@@ -15,45 +15,53 @@ $(document).ready(function(){
 	var startDate = new Date(input_startdate),
 		endDate   = new Date(input_enddate);
 		
-	$('a#date-start').click(function(e){ e.preventDefault(); });
-	$('a#date-start')
-		.datepicker({
-			orientation: 'auto'
-		})
-		.on('changeDate', function(ev){
-            startDate 		= new Date(ev.date);
-            startDate_dd 	= ("0" + startDate.getDate()).slice(-2);
-			startDate_mm 	= ('0' + (startDate.getMonth() + 1)).slice(-2); //January is 0!
-			startDate_yyyy 	= startDate.getFullYear();
-            $('input#start-date-display').val(startDate_yyyy + '-' + startDate_mm + '-' + startDate_dd);
-			
-			if (ev.date.valueOf() > endDate.valueOf()){
-	            $('div.event-date div.alert').removeClass('hide').text('The start date must be before the end date.');
-	        } else {
-	            $('div.event-date div.alert').addClass('hide');
-	        }
-
-	        $('a#date-start').datepicker('hide');
+	$('#date-start').datetimepicker({
+		pickDate : true,
+		pickTime : true,
 	});
 
-	$('a#date-end').click(function(e){ e.preventDefault(); });
-	$('a#date-end')
-		.datepicker({
-			orientation: 'auto'
-		})
-		.on('changeDate', function(ev){
-            endDate 	 = new Date(ev.date);            
-            endDate_dd 	 = ('0' + endDate.getDate()).slice(-2);
-			endDate_mm 	 = ('0' + (endDate.getMonth() + 1)).slice(-2); //January is 0!
-			endDate_yyyy = endDate.getFullYear();
-            $('input#end-date-display').val(endDate_yyyy + '-' + endDate_mm + '-' + endDate_dd);
-			
-			if (ev.date.valueOf() < startDate.valueOf()){
-	            $('div.event-date div.alert').removeClass('hide').text('The end date must be after the start date.');
-	        } else {
-	            $('div.event-date div.alert').addClass('hide');
-	        }
+	$('#date-start').on('dp.change', function(e) {
+		var startDate = new Date(e.date._d),
+			date      = moment(startDate).format('YYYY-MM-DD h:mm a');
+        
+        $('input#start-date-display').val(date);
+		if (startDate.valueOf() > endDate.valueOf()){ invalidDates(); return false; }
 
-	        $('a#date-end').datepicker('hide');
+		validDates();
+		return;
 	});
+
+	$('#date-end').datetimepicker({
+		pickDate : true,
+		pickTime : true,
+	});
+
+	$('#date-end').on('dp.change', function(e){
+        var endDate = new Date(e.date._d),
+			date    = moment(endDate).format('YYYY-MM-DD h:mm a');
+
+        $('input#end-date-display').val(date);
+		if (endDate.valueOf() < startDate.valueOf()){ invalidDates(); return false; }
+
+		validDates();
+		return;
+	});
+
+	function validDates() {
+		var icon = '<i class="fa fa-check"></i>&nbsp; ';
+
+		$('div.event-date div.alert')
+			.removeClass('hide alert-danger')
+			.addClass('alert-success')
+			.html(icon + 'Valid Dates');
+	}
+
+	function invalidDates() {
+		var icon = '<i class="fa fa-times"></i>&nbsp; ';
+
+		$('div.event-date div.alert')
+			.removeClass('hide alert-success')
+			.addClass('alert-danger')
+			.html(icon + 'The start date must be before the end date.');
+	}
 });

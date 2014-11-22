@@ -32,15 +32,15 @@ class Control_Page_Ministry_Event_Edit extends Control_Page {
 	public function render() {
 		$this->_ministry  = isset($this->_request['variables'][0]) ? $this->_request['variables'][0] : null;
 		$this->_id 		  = isset($this->_request['variables'][1]) ? $this->_request['variables'][1] : null;
-		$this->_eventPath = dirname(__FILE__).'/../../../../../../uploads/event/';
+		$this->_eventPath = $this->_uploads.'/event';
 
-		if ($this->_id == null) { header('Location: /ministry/'.$this->_ministry.'/members'); exit; }
+		if ($this->_id == null) { header('Location: /ministry/'.$this->_ministry.'/events'); exit; }
 
 		if (isset($_GET['action']) && $_GET['action'] == 'remove_image') { $this->_removeEventImage($_GET['id']); }
 		if (isset($_GET['action']) && $_GET['action'] == 'set_primary') { $this->_setPrimaryImage($_GET['id']); }
 
-		if (isset($_FILES['file'])) {
-			if ($this->_validateUpload($_FILES['file'])) { $this->_uploadEventImages($_FILES); }
+		if (isset($_FILES['file']) && isset($_POST['avatar_src']) && isset($_POST['avatar_data'])) {
+			$this->_cropImage();
 		}
 		
 		$this->_post = $this->_getEvent();
@@ -74,10 +74,13 @@ class Control_Page_Ministry_Event_Edit extends Control_Page {
 			if ($field == '') { $required = false; }
 		}
 
-		if (!$required) { $this->_errors[] = 'All fields are required!'; return false; }
+		$startDate = $_POST['event_start'] = strtotime($post['event_start']);
+		$endDate   = $_POST['event_end'] = strtotime($post['event_end']);
 
-		$startDate = strtotime($post['event_start']);
-		$endDate   = strtotime($post['event_end']);
+		if (!$required) {
+			$this->_errors[] = 'All fields are required!';			
+			return false;
+		}
 
 		if ($startDate > $endDate) { $this->_errors[] = 'The start date must be before the end date.'; return false; }
 		if ($endDate < $startDate) { $this->_errors[] = 'The end date must be after the start date.'; return false; }
@@ -95,15 +98,15 @@ class Control_Page_Ministry_Event_Edit extends Control_Page {
 		$eventId = $event['_id']->{'$id'};
 
 		$imagesFilter = array(
-			'file_parent' => $eventId,
-			'file_type'   => 'event',
-			'file_active' => 1);
+			'file_parent'  => $eventId,
+			'file_type'    => 'event',
+			'file_primary' => 1,
+			'file_active'  => 1);
 
 		// get event images
-		$query  = $this->_collection['file']->find($imagesFilter);
-		$images = iterator_to_array($query);
+		$image  = $this->_collection['file']->findOne($imagesFilter);
+		$event['event_image'] = $image;
 
-		$event['event_images'] = $images;
 		return $event;
 	}
 
@@ -111,8 +114,8 @@ class Control_Page_Ministry_Event_Edit extends Control_Page {
 		$settings = array(
 			'event_title' 	=> $post['event_title'],
 			'event_text'  	=> $post['event_text'],
-			'event_start'	=> strtotime($post['event_start']),
-			'event_end'		=> strtotime($post['event_end']),
+			'event_start'	=> $post['event_start'],
+			'event_end'		=> $post['event_end'],
 			'event_active'	=> (int) $post['event_active'],
 			'event_updated'	=> new MongoDate());
 
@@ -127,124 +130,82 @@ class Control_Page_Ministry_Event_Edit extends Control_Page {
 		exit;
 	}
 
-	protected function _setPrimaryImage($id) {
-		// set existing primary image to 0
-		$settings = array('file_primary' => 0);
-		$filter = array(
-			'file_parent'  => $this->_id,
-			'file_primary' => 1,
-			'file_type'    => 'event');
+	protected function _cropImage() {
+		require($this->_lib.'/cropper/crop-avatar.php');
 
-		$this->_collection['file']->update($filter, array('$set' => $settings));
+		$crop = new CropAvatar();
+		$cropResult = $crop->cropImage($_POST['avatar_src'], $_POST['avatar_data'], $_FILES['file']);
 
-		// update file set primary
-		$primarySettings = array('file_primary' => 1);
-		$primaryFilter   = array('_id' => new MongoId($id));
-		$this->_collection['file']->update($primaryFilter, array('$set' => $primarySettings));
+		$response = array('state' => 200);
 
-		$_SESSION['msg'][] = array(
-			'type' => 'success',
-			'msg'  => 'Image successfully set as primary.');
+		if ($cropResult['status']) {
+			$uploadResult = $this->_uploadEventImage($cropResult['dst']);
+			$uploadAbsolutePath = 'http://'.$_SERVER['SERVER_NAME'].'/uploads/event';
 
-		$this->_redirect();
-	}
+			$response['message'] = $uploadResult['msg'];
+			$response['result']  = $uploadAbsolutePath.'/'.$uploadResult['filename'];
 
-	protected function _uploadEventImages() {
-		foreach ($this->_fileTmpPaths as $key => $fileTmpPath) {
-			// move uploaded file
-			if (move_uploaded_file($fileTmpPath, $this->_eventPath.$this->_fileNames[$key])) {
-				// base64_encode image
-				$extension = explode('.', $this->_fileNames[$key]);
-				$extension = end($extension);
-
-				$rand = str_shuffle(basename($this->_fileNames[$key])).rand(11111, 99999);
-				$filename  = md5($rand);
-				$filename  = $filename.'.'.$extension;
-
-				rename($this->_eventPath.$this->_fileNames[$key], $this->_eventPath.$filename);
-
-				$settings = array(
-					'file_parent' 	 => $this->_id,
-					'file_name' 	 => $filename,
-					'file_extension' => $this->_fileTypes[$key],
-					'file_type'		 => 'event',
-					'file_active'	 => 1,
-					'file_primary'   => 0,
-					'file_created'	 => new MongoDate(),
-					'file_updated'	 => new MongoDate());
-
-				// check primary is already set
-				if (!$this->_checkIfPrimary()) { $settings['file_primary'] = 1; }
-
-				$this->_collection['file']->insert($settings);
-
-				// edit event update time
-				$settings = array('event_updated' => new MongoDate());
-				$filter = array('_id' => new MongoId($this->_id));
-
-				$this->_collection['event']->update($filter, array('$set' => $settings));
-				continue;
-			}
-
-			$_SESSION['msg'][] = array(
-				'type' 	=> 'danger',
-				'msg'	=> 'Image upload failed, possibly due to incorrect permissions on the upload folder.');
-
-			unset($_SESSION['event_tmpimages']);
-
-			$this->_redirect();
+			echo json_encode($response);
+		    exit;
 		}
 
-		unset($fileTmpPath);
+	    $response['message'] = $cropResult['msg'];
+	    $response['result']  = $cropResult['result'];
 
-		$_SESSION['msg'][] = array(
-			'type' 	=> 'success',
-			'msg'	=> 'Successfully uploaded event images.');
-
-		$this->_redirect();
+	    echo json_encode($response);
+	    exit;
 	}
 
-	protected function _removeEventImage($id) {
-		$fileFilter = array('_id' => new MongoId($id));
-		$image = $this->_collection['file']->findOne($fileFilter);
+	protected function _uploadEventImage($fileTmpPath) {
+		$file = basename($fileTmpPath);
 
-		$filter = array(
-			'_id'         => new MongoId($id),
-			'file_parent' => $this->_id,
-			'file_type'   => 'event');
+		// move uploaded file
+		if (rename($fileTmpPath, $this->_eventPath.'/'.$file)) {
+			// base64_encode image
+			$extension = explode('.', $file);
+			$extension = end($extension);
 
-		$this->_collection['file']->remove($filter, array('justOne' => true));
+			$rand 		= str_shuffle(basename($file)).rand(11111, 99999);
+			$filename  	= md5($rand);
+			$filename  	= $filename.'.'.$extension;
 
-		unlink($this->_eventPath.$image['file_name']);
+			rename($this->_eventPath.'/'.$file, $this->_eventPath.'/'.$filename);
 
-		$_SESSION['msg'][] = array(
-			'type'  => 'success',
-			'msg'	=> 'Successfully removed image.');
+			// check if file exists
+			$existsFilter = array(
+				'file_parent'  => $this->_id,
+				'file_type'    => 'event',
+				'file_active'  => 1,
+				'file_primary' => 1);
 
-		$this->_redirect();
-	}
+			$exists = $this->_collection['file']->findOne($existsFilter);
 
-	protected function _checkIfPrimary() {
-		$filter = array(
-			'file_parent' => $this->_id,
-			'file_active' => 1,
-			'file_type'   => 'event');
+			if (!empty($exists)) {
+				unlink($this->_eventPath.'/'.$exists['file_name']);
 
-		$query = $this->_collection['file']->find($filter);
-		$images = iterator_to_array($query);
+				// update datebase file name
+				$settings = array('$set' => array(
+					'file_name'    => $filename,
+					'file_updated' => new MongoDate()));
 
-		foreach ($images as $key => $image) {
-			if ($image['file_primary'] == 1) {
-				return true;
+				$filter = array('_id' => $exists['_id']);
+				$this->_collection['file']->update($filter, $settings);
+
+				$response = array(
+					'status'   => 'success',
+					'msg'      => 'Successfully uploaded image',
+					'filename' => $filename);
+
+				return $response;
 			}
 		}
 
-		return false;
-	}
+		$response = array(
+				'status'   => 'error',
+				'msg'      => 'File not found!',
+				'filename' => $filename);
 
-	protected function _redirect() {
-		header('Location: /ministry/'.$this->_ministry.'/event/edit/'.$this->_id);
-		exit;
+		return $response;
 	}
 
 	/* Private Methods

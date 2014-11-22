@@ -1,0 +1,171 @@
+<div class="ministry-container" id="main">
+	<section class="ministry-info content-middle">
+		<div class="info-main clearfix">
+			<div class="ministry-image">
+				<img src="/uploads/ministry/<?php echo $ministry['ministry_image']['file_name']; ?>" alt="ministry image">
+			</div>
+			<div class="ministry-description">
+				<h3><?php echo ucwords($ministry['ministry_title']); ?></h3>
+				<div class="coordinator">
+					<p class="admin">
+						<i class="glyphicon glyphicon-user"></i>&nbsp; Coordinator:
+						<?php echo $ministry['ministry_admin']['admin_name']; ?>
+					</p>
+					<p class="email">
+						<i class="glyphicon glyphicon-envelope"></i>&nbsp; Email:
+						<?php echo $ministry['ministry_admin']['admin_email']; ?>
+					</p>
+				</div>
+				<div class="text">
+					<p><?php echo $ministry['ministry_description']; ?></p>
+				</div>
+				<div class="actions">
+					<a href="#" class="join-ministry"><i class="fa fa-plus"></i>&nbsp; Join</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="content-main">
+		<div class="content-wrapper content-middle clearfix">
+			
+			<section class="left-panel panel">
+				<div class="header">
+					<ul class="ministry-menu">
+						<li class="<?php echo $class == 'view' ? 'active' : ''; ?>">
+							<a href="/ministry/view/<?php echo $ministry['_id']->{'$id'}; ?>#main">Members</a>
+						</li>
+						<li class="<?php echo $class == 'events' ? 'active' : ''; ?>">
+							<a href="/ministry/<?php echo $ministry['_id']->{'$id'}; ?>/events#main">Events</a>
+						</li>
+						<li class="<?php echo $class == 'news' ? 'active' : ''; ?>">
+							<a href="/ministry/<?php echo $ministry['_id']->{'$id'}; ?>/news#main">News</a>
+						</li>
+						<li class="<?php echo $class == 'gallery' ? 'active' : ''; ?>">
+							<a href="/ministry/<?php echo $ministry['_id']->{'$id'}; ?>/gallery#main">Gallery</a>
+						</li>
+					</ul>
+				</div>
+
+				<div class="panel-main">
+					<div class="members-container clearfix">
+						<?php if (!empty($members)): ?>
+							<?php $i = 1; ?>
+							<?php foreach ($members as $member): ?>
+								<?php if ($i == 1): ?>
+									<div class="member-list clearfix">
+								<?php endif ?>
+								<div class="member-template clearfix">
+									<div class="image">
+										<a href="#" class="memberModal" data-toggle="modal" data-target="#memberView"
+										data-id="<?php echo $member['_id']->{'$id'}; ?>">
+											<img src="/uploads/member/<?php echo $member['member_image']['file_name']; ?>" alt="member avatar">
+										</a>
+									</div>
+									<div class="info">
+										<p class="name">
+											<a href="#" data-toggle="modal" data-target="#memberView">
+												<?php echo $member['member_fullname']; ?>
+											</a>
+										</p>
+										<p class="title"><?php echo ucfirst($member['member_type']); ?></p>
+										<p class="social">
+											<a href="#"><i class="fa fa-facebook"></i></a>
+											<a href="#"><i class="fa fa-twitter"></i></a>
+											<a href="#"><i class="fa fa-instagram"></i></a>
+										</p>
+									</div>
+								</div>
+								<?php if ($i % 4 == 0): ?>
+									<?php if ($i == count($members)): ?>
+										</div>
+									<?php else: ?>
+										</div><div class="member-list clearfix">
+									<?php endif ?>
+								<?php endif ?>
+
+								<?php $i++; ?>
+							<?php endforeach ?>
+						<?php else: ?>
+							<p>No members yet!</p>
+						<?php endif ?>
+					</div>
+				</div>
+			</section>
+
+			<!-- left panel profile template -->
+			<section class="right-panel panel">
+				<div class="panel-header clearfix">
+					<p>News</p>
+					<a href="#" class="view-more">View More</a>
+				</div>
+				<div class="news-list">					
+					<div class="news-template clearfix">
+						<div class="news-day-month">
+							<div class="news-month">OCT</div>
+							<div class="news-day">02</div>
+						</div>
+						<div class="news-info">
+							<a href="#">Oranizing a Charity Parachute Jump</a>
+						</div>
+					</div>
+					<div class="news-template clearfix">
+						<div class="news-day-month">
+							<div class="news-month">OCT</div>
+							<div class="news-day">02</div>
+						</div>
+						<div class="news-info">
+							<a href="#">Oranizing a Charity Parachute Jump</a>
+						</div>
+					</div>
+					<div class="news-template clearfix">
+						<div class="news-day-month">
+							<div class="news-month">OCT</div>
+							<div class="news-day">02</div>
+						</div>
+						<div class="news-info">
+							<a href="#">Oranizing a Charity Parachute Jump</a>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</section>
+
+	<div class="modal fade member-view-modal" id="memberView" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-body">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<div class="body-content member-info">
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/html" id="memberDetailTmp">
+	<div class="image">
+		<img src="/uploads/member/[IMAGE]" alt="member avatar">
+	</div>
+	<div class="details">
+		<p class="name">
+			<span><i class="fa fa-user"></i>&nbsp; [NAME]</span><br>
+			<span class="title">[TITLE]</span>
+		</p>
+		<p class="email"><i class="fa fa-envelope"></i>&nbsp; [EMAIL]</p>
+		<p class="phone"><i class="fa fa-phone"></i>&nbsp; [PHONE]</p>
+		<p class="address"><i class="fa fa-home"></i>&nbsp; [ADDRESS]</p>
+		<p class="facebook">
+			<a href="https://facebook.com/aqceagleman"><i class="fa fa-facebook"></i>&nbsp; facebook</a>
+		</p>
+		<p class="twitter">
+			<a href="https://twitter.com/aqceagleman"><i class="fa fa-twitter"></i>&nbsp; twitter</a>
+		</p>
+		<p class="instagram">
+			<a href="https://instagram.com/aqceagleman"><i class="fa fa-instagram"></i>&nbsp; instagram</a>
+		</p>
+	</div>
+</script>

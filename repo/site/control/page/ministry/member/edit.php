@@ -32,13 +32,13 @@ class Control_Page_Ministry_Member_Edit extends Control_Page {
 	public function render() {
 		$this->_ministry   = isset($this->_request['variables'][0]) ? $this->_request['variables'][0] : null;
 		$this->_id 		   = isset($this->_request['variables'][1]) ? $this->_request['variables'][1] : null;
-		$this->_memberPath = dirname(__FILE__).'/../../../../../../uploads/member/';
+		$this->_memberPath = $this->_uploads.'/member';
 
 		if ($this->_id == null) { header('Location: /ministry/'.$this->_ministry.'/members'); exit; }
 		if (isset($_GET['action']) && $_GET['action'] == 'remove_image') { $this->_removeImage($_GET['id']); }
 		
-		if (isset($_FILES['file'])) {
-			if ($this->_validateUpload($_FILES['file'])) { $this->_uploadMemberImage(); }
+		if (isset($_FILES['file']) && isset($_POST['avatar_src']) && isset($_POST['avatar_data'])) {
+			$this->_cropImage();
 		}
 
 		$this->_post = $this->_getMember();
@@ -126,100 +126,82 @@ class Control_Page_Ministry_Member_Edit extends Control_Page {
 		exit;
 	}
 
-	protected function _uploadMemberImage() {
-		foreach ($this->_fileTmpPaths as $key => $fileTmpPath) {
-			// move uploaded file
-			if (move_uploaded_file($fileTmpPath, $this->_memberPath.$this->_fileNames[$key])) {
-				// base64_encode image
-				$extension = explode('.', $this->_fileNames[$key]);
-				$extension = end($extension);
+	protected function _cropImage() {
+		require($this->_lib.'/cropper/crop-avatar.php');
 
-				$rand = str_shuffle(basename($this->_fileNames[$key])).rand(11111, 99999);
-				$filename  = md5($rand);
-				$filename  = $filename.'.'.$extension;
-				
-				rename($this->_memberPath.$this->_fileNames[$key], $this->_memberPath.$filename);
+		$crop = new CropAvatar();
+		$cropResult = $crop->cropImage($_POST['avatar_src'], $_POST['avatar_data'], $_FILES['file']);
 
-				// check if image already exists
-				$existsFilter = array(
-					'file_parent'  => $this->_id,
-					'file_active'  => 1,
-					'file_primary' => 1,
-					'file_type'    => 'member');
+		$response = array('state' => 200);
 
-				$exists = $this->_collection['file']->findOne($existsFilter);
+		if ($cropResult['status']) {
+			$uploadResult = $this->_uploadMemberImage($cropResult['dst']);
+			$uploadAbsolutePath = 'http://'.$_SERVER['SERVER_NAME'].'/uploads/member';
 
-				if (!empty($exists)) {
-					$removeFileFilter = array(
-						'_id'         => new MongoId($exists['_id']),
-						'file_parent' => $this->_id);
+			$response['message'] = $uploadResult['msg'];
+			$response['result']  = $uploadAbsolutePath.'/'.$uploadResult['filename'];
 
-					$this->_collection['file']->remove($removeFileFilter, array('justOne' => true));
-
-					unlink($this->_memberPath.$exists['file_name']);
-				}
-
-				$fileSettings = array(
-					'file_parent' 	 => $this->_id,
-					'file_name' 	 => $filename,
-					'file_extension' => $this->_fileTypes[$key],
-					'file_type'		 => 'member',
-					'file_active'	 => 1,
-					'file_primary'	 => 1,
-					'file_created'	 => new MongoDate(),
-					'file_updated'	 => new MongoDate());
-
-				$this->_collection['file']->insert($fileSettings);
-
-				// edit event update time
-				$memberSettings = array('member_updated' => new MongoDate());
-				$memberFilter   = array('_id' => new MongoId($this->_id));
-
-				$this->_collection['member']->update($memberFilter, array('$set' => $memberSettings));
-				continue;
-			}
-
-			$_SESSION['msg'][] = array(
-				'type' 	=> 'danger',
-				'msg'	=> 'Image upload failed, possibly due to incorrect permissions on the upload folder.');
-
-			$this->_redirect();
+			echo json_encode($response);
+		    exit;
 		}
 
-		unset($fileTmpPath);
+	    $response['message'] = $cropResult['msg'];
+	    $response['result']  = $cropResult['result'];
 
-		$_SESSION['msg'][] = array(
-			'type' 	=> 'success',
-			'msg'	=> 'Successfully uploaded member profile image.');
-
-		$this->_redirect();
+	    echo json_encode($response);
+	    exit;
 	}
 
-	protected function _removeImage($id) {
-		// remove member image
-		$fileFilter = array(
-			'_id'         => new MongoId($id),
-			'file_parent' => $this->_id,
-			'file_type'   => 'member');
+	protected function _uploadMemberImage($fileTmpPath) {
+		$file = basename($fileTmpPath);
 
-		// get file id
-		$image = $this->_collection['file']->findOne($fileFilter);
+		// move uploaded file
+		if (rename($fileTmpPath, $this->_memberPath.'/'.$file)) {
+			// base64_encode image
+			$extension = explode('.', $file);
+			$extension = end($extension);
 
-		$removeFileFilter = array('_id' => new MongoId($id));
-		$this->_collection['file']->remove($removeFileFilter, array('justOne' => true));
+			$rand 		= str_shuffle(basename($file)).rand(11111, 99999);
+			$filename  	= md5($rand);
+			$filename  	= $filename.'.'.$extension;
 
-		unlink($this->_memberPath.$image['file_name']);
+			rename($this->_memberPath.'/'.$file, $this->_memberPath.'/'.$filename);
 
-		$_SESSION['msg'][] = array(
-			'type'  => 'success',
-			'msg'	=> 'Successfully removed image.');
+			// check if file exists
+			$existsFilter = array(
+				'file_parent'  => $this->_id,
+				'file_type'    => 'member',
+				'file_active'  => 1,
+				'file_primary' => 1);
 
-		$this->_redirect();
-	}
+			$exists = $this->_collection['file']->findOne($existsFilter);
 
-	protected function _redirect() {
-		header('Location: /ministry/'.$this->_ministry.'/member/edit/'.$this->_id);
-		exit;	
+			if (!empty($exists)) {
+				unlink($this->_memberPath.'/'.$exists['file_name']);
+
+				// update datebase file name
+				$settings = array('$set' => array(
+					'file_name'    => $filename,
+					'file_updated' => new MongoDate()));
+
+				$filter = array('_id' => $exists['_id']);
+				$this->_collection['file']->update($filter, $settings);
+
+				$response = array(
+					'status'   => 'success',
+					'msg'      => 'Successfully uploaded image',
+					'filename' => $filename);
+
+				return $response;
+			}
+		}
+
+		$response = array(
+				'status'   => 'error',
+				'msg'      => 'File not found!',
+				'filename' => $filename);
+
+		return $response;
 	}
 
 	/* Private Methods

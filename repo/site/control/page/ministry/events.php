@@ -68,7 +68,7 @@ class Control_Page_Ministry_Events extends Control_Page {
 		$query = $this->_collection['event']->find($filter)
 			->skip($start)
 			->limit(self::RANGE)
-			->sort(array('ministry_updated' => -1));
+			->sort(array('event_updated' => -1));
 
 		$events = iterator_to_array($query);
 		return $events;
@@ -90,7 +90,9 @@ class Control_Page_Ministry_Events extends Control_Page {
 	}
 
 	protected function _setFilter() {
-		$filter = array('event_active' => 1);
+		$filter = array(
+			'event_active'   => 1,
+			'event_ministry' => $this->_ministry);
 
 		switch ($this->_var) {
 			case 'active':		$filter['event_active'] = 1; break;

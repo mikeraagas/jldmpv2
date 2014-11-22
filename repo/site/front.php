@@ -199,7 +199,7 @@ class Front extends Eden {
 		}
 		
 		$array 		= explode('/',  $path);
-		$pages 		= $this->config('pages');
+		$pages 		= $this->config('/front/pages');
 		$variables 	= array();
 		
 		$page = NULL;

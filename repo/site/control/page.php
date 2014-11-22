@@ -27,6 +27,8 @@ abstract class Control_Page extends Eden_Class {
 	protected $_template 	= null;
 	protected $_db 			= null;
 	protected $_request     = null;
+	protected $_lib         = null;
+	protected $_uploads     = null;
 	protected $_msg 		= array();
 
 	// upload configs
@@ -64,6 +66,8 @@ abstract class Control_Page extends Eden_Class {
 	public function __construct() {
 		$this->_request = control()->registry()->get('request');
 		$this->_db 		= control()->getDatabase();
+		$this->_lib     = control()->path('lib');
+		$this->_uploads = control()->path('uploads');
 
 		// set database collections
 		$this->_setCollections();
@@ -194,7 +198,8 @@ abstract class Control_Page extends Eden_Class {
 			'member'   => new MongoCollection($this->_db, 'member'),
 			'event'    => new MongoCollection($this->_db, 'event'),
 			'admin'    => new MongoCollection($this->_db, 'admin'),
-			'file'     => new MongoCollection($this->_db, 'file'));
+			'file'     => new MongoCollection($this->_db, 'file'),
+			'news'     => new MongoCollection($this->_db, 'news'));
 
 		$this->_dbMinistry = new MongoCollection($this->_db, 'ministry');
 		$this->_dbMember   = new MongoCollection($this->_db, 'member');

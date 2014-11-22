@@ -1,14 +1,15 @@
 /* ------------------ GENERAL ------------------ */
 
 body {
-	color: #333;
+	/*background: url(/assets/images/subtle/groovepaper.png);*/
+	color: #474d59;
 	font-family: 'Open Sans', sans-serif !important;
 	font-size: 13px !important;
 	margin: 0;
 }
 
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-	font-family: 'Raleway', sans-serif;
+	font-family: 'Montserrat', sans-serif;
 	font-weight: bold;
 }
 
@@ -58,7 +59,7 @@ input[type="text"], input[type="email"], input[type="password"], select, button 
 .fixed-header .first-column .header-logo p { display: none !important; }
 .fixed-header .second-column ul { min-height: 60px !important; }
 .fixed-header .second-column ul li a { height: 60px !important; padding-top: 20px !important; }
-.fixed-header .second-column ul li.donate a { padding-top: 8px !important; }
+.fixed-header .second-column ul li.donate a { display: block !important; }
 
 .bottom-header { background-color: #fff; box-shadow: 0 5px 30px 0 rgba(0,0,0,0.20); z-index: 999; }
 .bottom-header .column { float: left; display: table; height: 75px; }
@@ -108,11 +109,7 @@ input[type="text"], input[type="email"], input[type="password"], select, button 
 
 /* ------------------ CONTENT BACKGROUND HEADER ------------------ */
 
-.background-header {
-	height: 210px;
-	margin-bottom: 20px;
-	position: relative;
-}
+.background-header { height: 210px; position: relative; }
 
 .background-header.about { background: url(/assets/images/about-banner.jpg); }
 .background-header.ministries { background: url(/assets/images/ministries-banner.jpg); }
@@ -164,8 +161,7 @@ input[type="text"], input[type="email"], input[type="password"], select, button 
 
 /* UPCOMING EVENT */
 
-.index-container .index-main { margin-top: 20px; }
-.index-container .upcoming-event { padding: 20px 0; }
+.index-container .upcoming-event { border-bottom: 1px solid #e5e6e9; padding: 20px 0; }
 .index-container .upcoming-event .column { float: left; }
 .index-container .upcoming-event .first-column { margin-right: 20px; padding: 10px 0; width: 25%; }
 .index-container .upcoming-event .first-column .event-label { margin-bottom: 5px; }
@@ -207,7 +203,12 @@ input[type="text"], input[type="email"], input[type="password"], select, button 
 
 /* FEATURED MINISTRIES */
 
-.index-container .index-main .first-row  { display: inline-block; margin-bottom: 20px; }
+.index-container .index-main .first-row {
+	background-color: #f6f6f6;
+	border-top: 1px solid #fff;
+	border-bottom: 1px solid #fff;
+	padding: 40px 0;
+}
 .index-container .index-main .first-row .featured-ministries { float: left; margin-right: 40px; width: 815px; }
 .index-container .featured-ministries .list-header { margin-bottom: 20px; }
 .index-container .featured-ministries .list-header h4 {
@@ -227,33 +228,93 @@ input[type="text"], input[type="email"], input[type="password"], select, button 
 	left: 125px;
 }
 .index-container .featured-ministries .list-header .view-more { float: right; text-transform: uppercase; }
-.index-container .featured-ministries .ministry-list-container .ministry-template { float: left; margin: 0 20px; width: 245px; }
-.index-container .featured-ministries .ministry-list-container .ministry-template:first-child { margin-left: 0; }
+.index-container .featured-ministries .ministry-list-container .ministry-template {
+	background-color: #fff;
+	border: 1px solid #f6f6f6;
+	border-bottom: none;
+	box-shadow: 0 2px 0 #ccd0d9;
+	box-sizing: border-box;
+	border-radius: 3px;
+	float: left;
+	height: 395px;
+	margin-right: 25px;
+	min-height: 200px;
+	overflow: hidden;
+	position: relative;
+	text-align: center;
+	top: 0;
+	width: 255px;
+}
 .index-container .featured-ministries .ministry-list-container .ministry-template:last-child { margin-right: 0; }
-.index-container .featured-ministries .ministry-list-container .ministry-template:last-child { margin-right: 0; }
-.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-image { margin-bottom: 10px; }
-.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-image img { height: 170px; width: 245px; }
-.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-text { margin-bottom: 10px; }
+.index-container .featured-ministries .ministry-list-container .ministry-template:hover {
+	border: 1px solid #ccd0d9;
+	box-shadow: none;
+}
+.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-image {
+	border-top-right-radius: 3px;
+	border-top-left-radius: 3px;
+	display: block;
+	height: 200px;
+	margin-bottom: 10px;
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+}
+.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-image img {
+	display: block;
+	margin: auto;
+	height: auto;
+	width: 100%;
+	position: relative;
+}
+.index-container .featured-ministries .ministry-list-container .ministry-template .join-ministry {
+	background-color: #68bb39;
+	border-radius: 50px;
+	color: #fff;
+	left: 75px;
+	padding: 5px 30px;
+	position: absolute;
+	text-transform: uppercase;
+	text-decoration: none;
+	top: 160px;
+}
+.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-text {
+	padding: 0 10px;
+	margin-bottom: 10px;
+}
 .index-container .featured-ministries .ministry-list-container .ministry-template .ministry-text p { margin: 0; }
 .index-container .featured-ministries .ministry-list-container .ministry-template .ministry-text .title {
-	margin-bottom: 10px;
+	margin-bottom: 5px;
 	font-size: 15px;
 	font-family: 'Montserrat' sans-serif;
 }
-.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-text .description { min-height: 50px; max-height: 70px; }
-.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-actions a { display: inline-block; float: right; }
-.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-actions a.view-details-btn { float: left; padding: 10px 0; } 
-.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-actions a.join-now-btn {
-	border: 2px solid #428f21;
-	color: #428f21;
-	text-decoration: none;
-	padding: 10px;
-} 
-.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-actions a.join-now-btn:hover {
-	background: #428f21;
-	color: #fff;
+.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-text .sub-title {
+	color: #949aa6;
+	margin-bottom: 20px;
 }
-
+.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-text .description {
+	font-size: 12px;
+	max-height: 54px;
+	overflow: hidden;
+	margin-bottom: 0;
+}
+.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-actions {
+	text-align: center;
+}
+.index-container .featured-ministries .ministry-list-container .ministry-template .ministry-actions a { display: block; padding: 10px 0; } 
+.index-container .featured-ministries .ministry-list-container .ministry-template .bottom-bar {
+	display: block;
+	bottom: 0;
+	position: absolute;
+	left: 50%;
+	width: 108px;
+	margin-left: -54px;
+	height: 3px;
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	background: #ef4f1a;
+	border-bottom: 1px solid #c8390e;
+}
 
 /* WEEKLY SCHEDULE */
 
@@ -267,7 +328,11 @@ input[type="text"], input[type="email"], input[type="password"], select, button 
 /* INDEX QUOTE */
 
 
-.index-container .index-quote { display: inline-block; margin: 20px 0; width: 100%; }
+.index-container .index-quote {
+	border-top: 1px solid #e5e6e9;
+	padding: 20px 0;
+	width: 100%;
+}
 .index-container .index-quote .index-quote-header { margin-bottom: 20px; }
 .index-container .index-quote .index-quote-header h4 {
 	float: left;

@@ -34,7 +34,7 @@ class Control_Page_Ministry_Add extends Control_Page {
 	/* Public Methods
 	-------------------------------*/
 	public function render() {		
-		$this->_ministryPath = dirname(__FILE__).'/../../../../../uploads/ministry/';
+		$this->_ministryPath = $this->_uploads.'/ministry';
 
 		if (isset($_POST['add_ministry'])) {
 			if ($this->_setErrors($_POST)) {
@@ -46,10 +46,8 @@ class Control_Page_Ministry_Add extends Control_Page {
 
 		if (isset($_GET['action']) && $_GET['action'] == 'remove_upload') { $this->_removeUploadedImage($_GET['id']); }
 
-		if (isset($_FILES['file'])) {
-			if ($this->_validateUpload($_FILES['file'])) {
-				$this->_uploadMinistryImage();
-			}
+		if (isset($_FILES['file']) && isset($_POST['avatar_src']) && isset($_POST['avatar_data'])) {
+			$this->_cropImage();
 		}
 
 		$this->_renderMsg();
@@ -109,37 +107,35 @@ class Control_Page_Ministry_Add extends Control_Page {
 			'ministry_admin' 		=> $ministryId,
 			'ministry_title' 		=> $post['title'],
 			'ministry_description' 	=> $post['description'],
-			'ministry_active' 		=> $post['active'],
+			'ministry_active' 		=> (int) $post['active'],
 			'ministry_created' 		=> new MongoDate(),
 			'ministry_updated' 		=> new MongoDate());
 
 		$this->_collection['ministry']->insert($ministrySettings);
 
 		// set member images
-		if (isset($_SESSION['ministry_tmpimages']) && !empty($_SESSION['ministry_tmpimages'])) {
-			$images = $_SESSION['ministry_tmpimages'];
+		if (isset($_SESSION['ministry_tmpimage']) && !empty($_SESSION['ministry_tmpimage'])) {
+			$image = $_SESSION['ministry_tmpimage'];
 
-			foreach ($images as $key => $image) {
-				$filter = array('_id' => new MongoId($image['_id']->{'$id'}));
-				$file   = $this->_collection['file']->findOne($filter);
+			$filter = array('_id' => $image['_id']);
+			$file   = $this->_collection['file']->findOne($filter);
 
-				if (empty($file)) continue;
-
+			if (!empty($file)) {
 				$settings = array(
 					'file_parent' => $ministrySettings['_id']->{'$id'},
 					'file_active' => 1);
 
 				$this->_updateDbImage($file['_id']->{'$id'}, $settings);
-			}
 
-			unset($_SESSION['ministry_tmpimages']);
+				unset($_SESSION['ministry_tmpimage']);
+			}
 		}
 
 		$_SESSION['msg'][] = array(
 			'type' => 'success',
 			'msg'  => 'Ministry successfully added.');
 
-		header('Location: /ministry');
+		header('Location: /ministries');
 		exit;
 	}
 
@@ -151,115 +147,86 @@ class Control_Page_Ministry_Add extends Control_Page {
 		return;
 	}
 
-	protected function _uploadMinistryImage() {
-		foreach ($this->_fileTmpPaths as $key => $fileTmpPath) {
-			// move uploaded file
-			if (move_uploaded_file($fileTmpPath, $this->_ministryPath.$this->_fileNames[$key])) {
-				// base64_encode image
-				$extension = explode('.', $this->_fileNames[$key]);
-				$extension = end($extension);
+	protected function _cropImage() {
+		require($this->_lib.'/cropper/crop-avatar.php');
 
-				$rand 		= str_shuffle(basename($this->_fileNames[$key])).rand(11111, 99999);
-				$filename  	= md5($rand);
-				$filename  	= $filename.'.'.$extension;
+		$crop = new CropAvatar();
+		$cropResult = $crop->cropImage($_POST['avatar_src'], $_POST['avatar_data'], $_FILES['file']);
 
-				rename($this->_ministryPath.$this->_fileNames[$key], $this->_ministryPath.$filename);
+		if ($cropResult['status']) {
+			$filename = $this->_uploadNewsImage($cropResult['dst']);
+			$uploadAbsolutePath = 'http://'.$_SERVER['SERVER_NAME'].'/uploads/ministry';
+		}
 
-				// check if image already exists
-				$existFilter = array(
-					'file_name'   => $_SESSION['ministry_tmpimages'][0]['file_name'],
+		$response = array(
+	        'state'   => 200,
+	        'message' => $cropResult['msg'],
+	        'result'  => isset($filename) ? $uploadAbsolutePath.'/'.$filename : $cropResult['result']
+	    );
+
+	    echo json_encode($response);
+	    exit;
+	}
+
+	protected function _uploadNewsImage($fileTmpPath) {
+		$file = basename($fileTmpPath);
+
+		// move uploaded file
+		if (rename($fileTmpPath, $this->_ministryPath.'/'.$file)) {
+			// base64_encode image
+			$extension = explode('.', $file);
+			$extension = end($extension);
+
+			$rand 		= str_shuffle(basename($file)).rand(11111, 99999);
+			$filename  	= md5($rand);
+			$filename  	= $filename.'.'.$extension;
+
+			rename($this->_ministryPath.'/'.$file, $this->_ministryPath.'/'.$filename);
+
+
+			// check if image already exists
+			if (isset($_SESSION['ministry_tmpimage'])) {
+				$existsFilter = array(
+					'file_name'   => $_SESSION['ministry_tmpimage']['file_name'],
 					'file_active' => 0,
 					'file_type'   => 'ministry');
 
-				$exists = $this->_collection['file']->findOne($existFilter);
+				$exists = $this->_collection['file']->findOne($existsFilter);
 
 				// if image exists update file and database
 				if (!empty($exists)) {
-					unlink($this->_ministryPath.$_SESSION['ministry_tmpimages'][0]['file_name']);
+					unlink($this->_ministryPath.'/'.$_SESSION['ministry_tmpimage']['file_name']);
 
 					// update datebase file name
 					$settings = array('$set' => array('file_name' => $filename));
-					$filter   = array('file_id' => $exists['file_id']);
+					$filter = array('_id' => $exists['_id']);
 
 					$this->_collection['file']->update($filter, $settings);
 
-					$_SESSION['ministry_tmpimages'][0]['file_name'] = $filename;
-					unset($fileTmpPath);
-
-					$_SESSION['msg'][] = array(
-						'type' 	=> 'success',
-						'msg'	=> 'Successfully updated ministry image.');
-
-					header('Location: /ministry/add');
-					exit;
+					$_SESSION['ministry_tmpimage']['file_name'] = $filename;
+					return $filename;
 				}
-
-				$fileSettings = array(
-					'file_name' 	 => $filename,
-					'file_extension' => $this->_fileTypes[$key],
-					'file_type'		 => 'ministry',
-					'file_active'	 => 0,
-					'file_primary'	 => 1,
-					'file_created'	 => new MongoDate(),
-					'file_updated'	 => new MongoDate());
-
-				$this->_collection['file']->insert($fileSettings);
-				$fileId = $fileSettings['_id']->{'$id'};
-				
-				if (!isset($_SESSION['ministry_tmpimages'])) { $_SESSION['ministry_tmpimages'] = array(); }
-
-				$_SESSION['ministry_tmpimages'][] = $fileSettings;
-				continue;
 			}
 
-			$_SESSION['msg'][] = array(
-				'type' 	=> 'danger',
-				'msg'	=> 'Image upload failed, possibly due to incorrect permissions on the upload folder.');
+			$fileSettings = array(
+				'file_name' 	 => $filename,
+				'file_extension' => $extension,
+				'file_type'		 => 'ministry',
+				'file_active'	 => 0,
+				'file_primary'	 => 1,
+				'file_created'	 => new MongoDate(),
+				'file_updated'	 => new MongoDate());
 
-			unset($_SESSION['ministry_tmpimages']);
+			$this->_collection['file']->insert($fileSettings);
+			$fileId = $fileSettings['_id']->{'$id'};
 
-			header('Location: /ministry/add');
-			exit;
+			if (!isset($_SESSION['ministry_tmpimage'])) { $_SESSION['ministry_tmpimage'] = array(); }
+			$_SESSION['ministry_tmpimage'] = $fileSettings;
+
+			return $filename;
 		}
 
-		unset($fileTmpPath);
-
-		$_SESSION['msg'][] = array(
-			'type' 	=> 'success',
-			'msg'	=> 'Successfully uploaded ministry image.');
-
-		header('Location: /ministry/add');
-		exit;
-	}
-
-	protected function _removeUploadedImage($id) {
-		$uploaded = $_SESSION['ministry_tmpimages'];
-
-		foreach ($uploaded as $key => $image) {
-			if ($image['_id']->{'$id'} == $id) {
-				unlink($this->_ministryPath.$_SESSION['ministry_tmpimages'][$key]['file_name']);
-				unset($_SESSION['ministry_tmpimages'][$key]);
-
-				$filter = array('_id' => new MongoId($id));
-				$this->_collection['file']->remove($filter, array('justOne' => true));
-
-				$_SESSION['msg'][] = array(
-					'type' 	=> 'success',
-					'msg'	=> 'Successfully removed uploaded image.');
-
-				header('Location: /ministry/add');
-				exit;
-			}
-		}
-
-		if (empty($_SESSION['ministry_tmpimages'])) { unset($_SESSION['ministry_tmpimages']); }
-
-		$_SESSION['msg'][] = array(
-			'type' 	=> 'danger',
-			'msg'	=> 'Image does not exists in uploaded files!');
-
-		header('Location: /ministry/add');
-		exit;
+		return false;
 	}
 
 	/* Private Methods
